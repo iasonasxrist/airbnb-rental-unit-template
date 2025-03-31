@@ -1,136 +1,172 @@
 
 import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router-dom";
-import { useIsMobile } from "@/hooks/use-mobile";
+import { Link } from "react-router-dom";
+import { useUser } from "@clerk/clerk-react";
+import { ArrowRight, Calendar, DollarSign, Home, LineChart, ShieldCheck, Sparkles } from "lucide-react";
 
 const Index = () => {
-  const navigate = useNavigate();
-  const isMobile = useIsMobile();
+  const { isSignedIn } = useUser();
 
   return (
     <div className="min-h-screen flex flex-col">
-      {/* Hero Section */}
-      <div className="bg-gradient-to-r from-airbnb-primary/10 to-airbnb-secondary/10 py-12 md:py-24">
-        <div className="container px-4 md:px-6">
-          <div className="flex flex-col lg:flex-row items-center justify-between gap-8">
-            <div className="space-y-4 lg:space-y-6 max-w-2xl">
-              <h1 className="text-3xl md:text-5xl font-bold tracking-tighter text-airbnb-primary">
-                Manage Your Airbnb Properties with Ease
-              </h1>
-              <p className="text-lg text-gray-600 max-w-[700px]">
-                Track expenses, manage bookings, and monitor your cash flow all in one place. AirCost is your perfect companion for Airbnb hosts.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4">
-                <Button 
-                  size="lg" 
-                  className="bg-airbnb-primary hover:bg-airbnb-primary/90"
-                  onClick={() => navigate("/dashboard")}
-                >
-                  Get Started
-                </Button>
-                <Button 
-                  variant="outline" 
-                  size="lg"
-                  onClick={() => navigate("/properties")}
-                >
-                  View Properties
-                </Button>
-              </div>
-            </div>
-            <div className="relative w-full max-w-md lg:max-w-lg">
-              <div className="rounded-2xl bg-white shadow-xl p-4 md:p-6">
-                <img 
-                  src="https://images.unsplash.com/photo-1564013799919-ab600027ffc6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80" 
-                  alt="Beautiful Airbnb property" 
-                  className="w-full h-auto rounded-lg"
-                />
-                <div className="mt-4 grid grid-cols-3 gap-3">
-                  <div className="text-center">
-                    <p className="text-2xl font-bold text-airbnb-primary">97%</p>
-                    <p className="text-sm text-gray-500">Occupancy</p>
-                  </div>
-                  <div className="text-center">
-                    <p className="text-2xl font-bold text-airbnb-primary">$2,450</p>
-                    <p className="text-sm text-gray-500">Avg. Monthly</p>
-                  </div>
-                  <div className="text-center">
-                    <p className="text-2xl font-bold text-airbnb-primary">68%</p>
-                    <p className="text-sm text-gray-500">Profit Margin</p>
-                  </div>
-                </div>
-              </div>
-            </div>
+      {/* Header */}
+      <header className="border-b">
+        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
+          <div className="flex items-center">
+            <span className="text-2xl font-bold text-airbnb-primary">AirCost</span>
+          </div>
+          <div className="flex items-center space-x-2">
+            {isSignedIn ? (
+              <Link to="/dashboard">
+                <Button>Go to Dashboard</Button>
+              </Link>
+            ) : (
+              <>
+                <Link to="/sign-in">
+                  <Button variant="outline">Sign In</Button>
+                </Link>
+                <Link to="/sign-up">
+                  <Button>Sign Up</Button>
+                </Link>
+              </>
+            )}
           </div>
         </div>
-      </div>
+      </header>
+
+      {/* Hero Section */}
+      <section className="py-12 md:py-24 bg-gradient-to-r from-cyan-50 to-blue-50">
+        <div className="container mx-auto px-4 flex flex-col md:flex-row items-center">
+          <div className="md:w-1/2 mb-10 md:mb-0">
+            <h1 className="text-4xl md:text-5xl font-bold mb-4">
+              Manage Your Airbnb Properties <span className="text-airbnb-primary">Effortlessly</span>
+            </h1>
+            <p className="text-lg mb-8 text-gray-700">
+              Track expenses, bookings, and profits all in one place. 
+              Never miss a payment or maintenance task again.
+            </p>
+            {isSignedIn ? (
+              <Link to="/dashboard">
+                <Button size="lg" className="gap-2">
+                  Go to Dashboard
+                  <ArrowRight className="h-4 w-4" />
+                </Button>
+              </Link>
+            ) : (
+              <Link to="/sign-up">
+                <Button size="lg" className="gap-2">
+                  Start For Free
+                  <ArrowRight className="h-4 w-4" />
+                </Button>
+              </Link>
+            )}
+          </div>
+          <div className="md:w-1/2">
+            <img 
+              src="https://images.unsplash.com/photo-1580587771525-78b9dba3b914?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" 
+              alt="Vacation property management" 
+              className="rounded-lg shadow-xl"
+            />
+          </div>
+        </div>
+      </section>
 
       {/* Features Section */}
-      <div className="py-12 md:py-24 bg-white">
-        <div className="container px-4 md:px-6">
-          <h2 className="text-2xl md:text-3xl font-bold text-center mb-8 md:mb-12">Everything You Need to Manage Your Properties</h2>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <div className="bg-white p-6 rounded-lg shadow-sm border">
-              <div className="w-10 h-10 rounded-full bg-airbnb-primary/10 flex items-center justify-center mb-4">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-airbnb-primary"><path d="M19 21V5a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v16"></path><path d="M12 7v.01"></path><rect x="3" y="17" width="18" height="4" rx="1"></rect></svg>
-              </div>
+      <section className="py-16 bg-white">
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl font-bold text-center mb-12">Everything You Need to Manage Your Properties</h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="bg-gray-50 p-6 rounded-lg">
+              <Home className="h-10 w-10 text-primary mb-4" />
               <h3 className="text-xl font-semibold mb-2">Property Management</h3>
-              <p className="text-gray-600">Keep track of all your properties in one place with detailed information and statistics.</p>
+              <p className="text-gray-600">
+                Add and manage all your rental properties in one central location.
+              </p>
             </div>
-            <div className="bg-white p-6 rounded-lg shadow-sm border">
-              <div className="w-10 h-10 rounded-full bg-airbnb-primary/10 flex items-center justify-center mb-4">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-airbnb-primary"><circle cx="12" cy="12" r="10"></circle><path d="M12 6v6l4 2"></path></svg>
-              </div>
-              <h3 className="text-xl font-semibold mb-2">Booking Calendar</h3>
-              <p className="text-gray-600">Manage all your bookings with an intuitive calendar interface and automatic reminders.</p>
-            </div>
-            <div className="bg-white p-6 rounded-lg shadow-sm border">
-              <div className="w-10 h-10 rounded-full bg-airbnb-primary/10 flex items-center justify-center mb-4">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-airbnb-primary"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
-              </div>
+            
+            <div className="bg-gray-50 p-6 rounded-lg">
+              <DollarSign className="h-10 w-10 text-primary mb-4" />
               <h3 className="text-xl font-semibold mb-2">Expense Tracking</h3>
-              <p className="text-gray-600">Track and categorize all your property-related expenses to maximize tax deductions.</p>
+              <p className="text-gray-600">
+                Track all expenses and categorize them for better financial management.
+              </p>
             </div>
-            <div className="bg-white p-6 rounded-lg shadow-sm border">
-              <div className="w-10 h-10 rounded-full bg-airbnb-primary/10 flex items-center justify-center mb-4">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-airbnb-primary"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>
-              </div>
-              <h3 className="text-xl font-semibold mb-2">Performance Analytics</h3>
-              <p className="text-gray-600">Get insights into your property performance with detailed charts and reports.</p>
+            
+            <div className="bg-gray-50 p-6 rounded-lg">
+              <Calendar className="h-10 w-10 text-primary mb-4" />
+              <h3 className="text-xl font-semibold mb-2">Booking Calendar</h3>
+              <p className="text-gray-600">
+                Visualize bookings and availability for all your properties.
+              </p>
             </div>
-            <div className="bg-white p-6 rounded-lg shadow-sm border">
-              <div className="w-10 h-10 rounded-full bg-airbnb-primary/10 flex items-center justify-center mb-4">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-airbnb-primary"><path d="M3 3h18v18H3z"></path><path d="m16 16-4-4-4 4"></path><path d="M8 8v.01"></path><path d="M12 8v.01"></path><path d="M16 8v.01"></path></svg>
-              </div>
-              <h3 className="text-xl font-semibold mb-2">Payment Tracking</h3>
-              <p className="text-gray-600">Keep track of all pending and received payments from your guests.</p>
+            
+            <div className="bg-gray-50 p-6 rounded-lg">
+              <LineChart className="h-10 w-10 text-primary mb-4" />
+              <h3 className="text-xl font-semibold mb-2">Financial Reports</h3>
+              <p className="text-gray-600">
+                Generate detailed reports about income, expenses, and profitability.
+              </p>
             </div>
-            <div className="bg-white p-6 rounded-lg shadow-sm border">
-              <div className="w-10 h-10 rounded-full bg-airbnb-primary/10 flex items-center justify-center mb-4">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-airbnb-primary"><rect width="20" height="16" x="2" y="4" rx="2"></rect><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path></svg>
-              </div>
-              <h3 className="text-xl font-semibold mb-2">Email Notifications</h3>
-              <p className="text-gray-600">Get automated email notifications for upcoming bookings and important events.</p>
+            
+            <div className="bg-gray-50 p-6 rounded-lg">
+              <ShieldCheck className="h-10 w-10 text-primary mb-4" />
+              <h3 className="text-xl font-semibold mb-2">Secure Access</h3>
+              <p className="text-gray-600">
+                Keep your data safe with our secure authentication system.
+              </p>
+            </div>
+            
+            <div className="bg-gray-50 p-6 rounded-lg">
+              <Sparkles className="h-10 w-10 text-primary mb-4" />
+              <h3 className="text-xl font-semibold mb-2">Automated Notifications</h3>
+              <p className="text-gray-600">
+                Get notified about upcoming bookings and maintenance tasks.
+              </p>
             </div>
           </div>
         </div>
-      </div>
+      </section>
 
       {/* CTA Section */}
-      <div className="py-12 md:py-24 bg-gray-50">
-        <div className="container px-4 md:px-6 text-center">
-          <h2 className="text-2xl md:text-3xl font-bold mb-4">Ready to streamline your Airbnb management?</h2>
-          <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
-            Join thousands of hosts who use AirCost to simplify their property management.
+      <section className="py-16 bg-primary text-white">
+        <div className="container mx-auto px-4 text-center">
+          <h2 className="text-3xl font-bold mb-4">Ready to simplify your property management?</h2>
+          <p className="text-lg mb-8 max-w-2xl mx-auto">
+            Join thousands of property owners who have streamlined their Airbnb business with AirCost.
           </p>
-          <Button 
-            size="lg" 
-            className="bg-airbnb-primary hover:bg-airbnb-primary/90"
-            onClick={() => navigate("/dashboard")}
-          >
-            Get Started for Free
-          </Button>
+          {isSignedIn ? (
+            <Link to="/dashboard">
+              <Button size="lg" variant="secondary">
+                Go to Dashboard
+              </Button>
+            </Link>
+          ) : (
+            <Link to="/sign-up">
+              <Button size="lg" variant="secondary">
+                Create Your Free Account
+              </Button>
+            </Link>
+          )}
         </div>
-      </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="bg-gray-100 py-8">
+        <div className="container mx-auto px-4">
+          <div className="flex flex-col md:flex-row justify-between items-center">
+            <div className="mb-4 md:mb-0">
+              <span className="text-xl font-bold text-airbnb-primary">AirCost</span>
+              <p className="text-sm text-gray-600 mt-1">© {new Date().getFullYear()} AirCost. All rights reserved.</p>
+            </div>
+            <div className="flex space-x-6">
+              <a href="#" className="text-gray-600 hover:text-gray-900">Privacy Policy</a>
+              <a href="#" className="text-gray-600 hover:text-gray-900">Terms of Service</a>
+              <a href="#" className="text-gray-600 hover:text-gray-900">Contact</a>
+            </div>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 };

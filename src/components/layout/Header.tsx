@@ -1,7 +1,7 @@
 
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
-import { BellIcon, LogOut, UserCircle, Settings } from "lucide-react";
+import { BellIcon, LogOut, Settings, User } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,21 +12,56 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useNavigate } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { UserButton, useClerk, useUser } from "@clerk/clerk-react";
+import { useEffect, useState } from "react";
 
 export function Header() {
   const { toast } = useToast();
   const navigate = useNavigate();
   const isMobile = useIsMobile();
+  const { signOut } = useClerk();
+  const { user } = useUser();
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+  
+  // Rate limiter for notifications
+  const [lastNotificationTime, setLastNotificationTime] = useState(0);
+  const NOTIFICATION_COOLDOWN = 30000; // 30 seconds
 
-  const handleLogout = () => {
-    // In a real app, this would call an auth service logout method
-    toast({
-      title: "Logged out",
-      description: "You have been successfully logged out",
-    });
+  const handleLogout = async () => {
+    if (isLoggingOut) return;
     
-    // Navigate to landing page after logout
-    navigate("/");
+    try {
+      setIsLoggingOut(true);
+      await signOut();
+      
+      toast({
+        title: "Logged out",
+        description: "You have been successfully logged out",
+      });
+      
+      navigate("/");
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "There was a problem logging out. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoggingOut(false);
+    }
+  };
+
+  const handleNotificationClick = () => {
+    const now = Date.now();
+    if (now - lastNotificationTime < NOTIFICATION_COOLDOWN) {
+      return;
+    }
+    
+    setLastNotificationTime(now);
+    toast({
+      title: "Notifications",
+      description: "No new notifications",
+    });
   };
 
   return (
@@ -37,34 +72,25 @@ export function Header() {
         <Button
           variant="ghost"
           size="icon"
-          onClick={() => {
-            toast({
-              title: "Notifications",
-              description: "No new notifications",
-            });
-          }}
+          onClick={handleNotificationClick}
+          aria-label="Notifications"
         >
           <BellIcon className="h-5 w-5" />
         </Button>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
+        <UserButton 
+          afterSignOutUrl="/"
+          appearance={{
+            elements: {
+              userButtonBox: "h-9 w-9",
+              userButtonAvatarBox: "h-full w-full",
+            }
+          }}
+          fallback={
             <Button variant="ghost" size="icon">
-              <UserCircle className="h-5 w-5" />
+              <User className="h-5 w-5" />
             </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>My Account</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              <Settings className="w-4 h-4 mr-2" />
-              Settings
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={handleLogout}>
-              <LogOut className="w-4 h-4 mr-2" />
-              Log out
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+          }
+        />
       </div>
     </header>
   );
