@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { PlusCircle, Phone } from "lucide-react";
+import { PlusCircle, Phone, Mail } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import {
   Dialog,
@@ -36,6 +36,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { EmailNotification } from "@/components/notifications/EmailNotification";
 
 // Sample data - in a real app, this would come from your database
 const initialPayments = [
@@ -45,8 +46,10 @@ const initialPayments = [
     property: "Beach House",
     amount: 850.00,
     dueDate: "2023-05-15",
+    bookingDate: "2023-05-20",
     status: "pending",
     contactInfo: "+1 (555) 123-4567",
+    email: "john.smith@example.com",
   },
   {
     id: "2",
@@ -54,8 +57,10 @@ const initialPayments = [
     property: "City Apartment",
     amount: 600.00,
     dueDate: "2023-05-20",
+    bookingDate: "2023-05-25",
     status: "pending",
     contactInfo: "+1 (555) 987-6543",
+    email: "jane.doe@example.com",
   },
   {
     id: "3",
@@ -63,8 +68,10 @@ const initialPayments = [
     property: "Mountain Cabin",
     amount: 1200.00,
     dueDate: "2023-05-12",
+    bookingDate: "2023-05-18",
     status: "pending",
     contactInfo: "+1 (555) 456-7890",
+    email: "bob.johnson@example.com",
   },
 ];
 
@@ -78,12 +85,16 @@ const properties = [
 const PendingPayments = () => {
   const [payments, setPayments] = useState(initialPayments);
   const [open, setOpen] = useState(false);
+  const [emailDialogOpen, setEmailDialogOpen] = useState(false);
+  const [selectedPayment, setSelectedPayment] = useState<typeof initialPayments[0] | null>(null);
   const [newPayment, setNewPayment] = useState({
     guest: "",
     property: "",
     amount: "",
     dueDate: "",
+    bookingDate: "",
     contactInfo: "",
+    email: "",
   });
   const { toast } = useToast();
 
@@ -105,7 +116,9 @@ const PendingPayments = () => {
       !newPayment.property ||
       !newPayment.amount ||
       !newPayment.dueDate ||
-      !newPayment.contactInfo
+      !newPayment.bookingDate ||
+      !newPayment.contactInfo ||
+      !newPayment.email
     ) {
       toast({
         title: "Error",
@@ -121,8 +134,10 @@ const PendingPayments = () => {
       property: newPayment.property,
       amount: parseFloat(newPayment.amount),
       dueDate: newPayment.dueDate,
+      bookingDate: newPayment.bookingDate,
       status: "pending",
       contactInfo: newPayment.contactInfo,
+      email: newPayment.email,
     };
 
     setPayments([...payments, payment]);
@@ -131,7 +146,9 @@ const PendingPayments = () => {
       property: "",
       amount: "",
       dueDate: "",
+      bookingDate: "",
       contactInfo: "",
+      email: "",
     });
     setOpen(false);
 
@@ -139,6 +156,11 @@ const PendingPayments = () => {
       title: "Payment added",
       description: `A new pending payment for ${payment.guest} has been added`,
     });
+  };
+
+  const handleSendNotification = (payment: typeof initialPayments[0]) => {
+    setSelectedPayment(payment);
+    setEmailDialogOpen(true);
   };
 
   return (
@@ -215,6 +237,17 @@ const PendingPayments = () => {
                 />
               </div>
               <div className="grid gap-2">
+                <Label htmlFor="bookingDate">Booking Date</Label>
+                <Input
+                  id="bookingDate"
+                  type="date"
+                  value={newPayment.bookingDate}
+                  onChange={(e) =>
+                    setNewPayment({ ...newPayment, bookingDate: e.target.value })
+                  }
+                />
+              </div>
+              <div className="grid gap-2">
                 <Label htmlFor="contactInfo">Contact Information</Label>
                 <Input
                   id="contactInfo"
@@ -226,6 +259,21 @@ const PendingPayments = () => {
                     })
                   }
                   placeholder="+1 (555) 123-4567"
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  value={newPayment.email}
+                  onChange={(e) =>
+                    setNewPayment({
+                      ...newPayment,
+                      email: e.target.value,
+                    })
+                  }
+                  placeholder="guest@example.com"
                 />
               </div>
             </div>
@@ -248,6 +296,7 @@ const PendingPayments = () => {
                 <TableHead>Property</TableHead>
                 <TableHead>Contact</TableHead>
                 <TableHead>Due Date</TableHead>
+                <TableHead>Booking Date</TableHead>
                 <TableHead className="text-right">Amount</TableHead>
                 <TableHead className="text-right">Status</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
@@ -265,6 +314,7 @@ const PendingPayments = () => {
                     </div>
                   </TableCell>
                   <TableCell>{payment.dueDate}</TableCell>
+                  <TableCell>{payment.bookingDate}</TableCell>
                   <TableCell className="text-right">
                     ${payment.amount.toFixed(2)}
                   </TableCell>
@@ -281,19 +331,28 @@ const PendingPayments = () => {
                     </Badge>
                   </TableCell>
                   <TableCell className="text-right">
-                    {payment.status === "pending" ? (
+                    <div className="flex justify-end gap-2">
+                      {payment.status === "pending" ? (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleMarkAsPaid(payment.id)}
+                        >
+                          Mark as Paid
+                        </Button>
+                      ) : (
+                        <Button size="sm" variant="outline" disabled>
+                          Paid
+                        </Button>
+                      )}
                       <Button
                         size="sm"
                         variant="outline"
-                        onClick={() => handleMarkAsPaid(payment.id)}
+                        onClick={() => handleSendNotification(payment)}
                       >
-                        Mark as Paid
+                        <Mail className="h-4 w-4" />
                       </Button>
-                    ) : (
-                      <Button size="sm" variant="outline" disabled>
-                        Paid
-                      </Button>
-                    )}
+                    </div>
                   </TableCell>
                 </TableRow>
               ))}
@@ -301,6 +360,12 @@ const PendingPayments = () => {
           </Table>
         </CardContent>
       </Card>
+
+      <EmailNotification 
+        open={emailDialogOpen} 
+        onOpenChange={setEmailDialogOpen}
+        payment={selectedPayment}
+      />
     </div>
   );
 };

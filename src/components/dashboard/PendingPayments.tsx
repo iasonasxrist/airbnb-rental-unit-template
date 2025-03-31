@@ -20,6 +20,7 @@ const pendingPayments = [
     property: "Beach House",
     amount: 850.00,
     dueDate: "2023-05-15",
+    bookingDate: "2023-05-20",
     status: "pending",
   },
   {
@@ -28,6 +29,7 @@ const pendingPayments = [
     property: "City Apartment",
     amount: 600.00,
     dueDate: "2023-05-20",
+    bookingDate: "2023-05-25",
     status: "pending",
   },
   {
@@ -36,6 +38,7 @@ const pendingPayments = [
     property: "Mountain Cabin",
     amount: 1200.00,
     dueDate: "2023-05-12",
+    bookingDate: "2023-05-18",
     status: "pending",
   },
 ];
@@ -62,6 +65,7 @@ export function PendingPayments() {
               <TableHead>Guest</TableHead>
               <TableHead>Property</TableHead>
               <TableHead>Due Date</TableHead>
+              <TableHead>Booking Date</TableHead>
               <TableHead className="text-right">Amount</TableHead>
               <TableHead className="text-right">Status</TableHead>
               <TableHead className="text-right">Actions</TableHead>
@@ -73,6 +77,7 @@ export function PendingPayments() {
                 <TableCell className="font-medium">{payment.guest}</TableCell>
                 <TableCell>{payment.property}</TableCell>
                 <TableCell>{payment.dueDate}</TableCell>
+                <TableCell>{payment.bookingDate}</TableCell>
                 <TableCell className="text-right">
                   ${payment.amount.toFixed(2)}
                 </TableCell>
