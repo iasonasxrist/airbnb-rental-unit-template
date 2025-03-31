@@ -1,9 +1,7 @@
-
 import { Sidebar } from "./Sidebar";
 import { Header } from "./Header";
 import { useEffect } from "react";
 import { useToast } from "@/components/ui/use-toast";
-import { PropertySelector } from "../property/PropertySelector";
 import { useProperty } from "@/contexts/PropertyContext";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useLocation } from "react-router-dom";
@@ -44,11 +42,6 @@ export function AppLayout({ children }: AppLayoutProps) {
     return () => clearInterval(intervalId);
   }, [toast, selectedProperty]);
 
-  // Determine if we should show the property context message
-  const showPropertyContext = selectedProperty !== "all" && 
-                             !location.pathname.includes("/properties") && 
-                             !location.pathname.includes("/property/");
-
   return (
     <div className="flex min-h-screen flex-col">
       <div className="flex flex-1">
@@ -56,14 +49,6 @@ export function AppLayout({ children }: AppLayoutProps) {
         <main className="flex-1 flex flex-col">
           <Header />
           <div className="flex-1 p-4 md:p-6">
-            <div className="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-              <PropertySelector />
-              {showPropertyContext && (
-                <div className="text-sm text-muted-foreground">
-                  Viewing data for: <span className="font-medium">{selectedProperty}</span>
-                </div>
-              )}
-            </div>
             {children}
           </div>
         </main>

@@ -1,7 +1,7 @@
 
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
-import { BellIcon, LogOut, Settings, User } from "lucide-react";
+import { BellIcon, User } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,6 +14,7 @@ import { useNavigate } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { UserButton, useClerk, useUser } from "@clerk/clerk-react";
 import { useEffect, useState } from "react";
+import { PropertySelector } from "../property/PropertySelector";
 
 export function Header() {
   const { toast } = useToast();
@@ -66,8 +67,11 @@ export function Header() {
 
   return (
     <header className="h-16 border-b flex items-center justify-between px-4 md:px-6">
+      <div className="flex items-center">
+        <h1 className="text-xl font-semibold mr-6 hidden md:block">AirCost</h1>
+        <PropertySelector />
+      </div>
       <h1 className="text-xl font-semibold md:hidden">AirCost</h1>
-      <div className="flex-1" />
       <div className="flex items-center space-x-2 md:space-x-4">
         <Button
           variant="ghost"
