@@ -15,12 +15,8 @@ export function PropertySelector() {
   const { selectedProperty, setSelectedProperty } = useProperty();
   const location = useLocation();
   const [properties, setProperties] = useState<Property[]>([]);
+  const isPropertiesPage = location.pathname === "/properties";
   
-  // Don't show the property selector on the properties listing page
-  if (location.pathname === "/properties") {
-    return null;
-  }
-
   useEffect(() => {
     const fetchProperties = async () => {
       try {
@@ -44,6 +40,11 @@ export function PropertySelector() {
     }
     return selectedProperty;
   };
+
+  // If we're on the properties page, return null, but AFTER all hooks are called
+  if (isPropertiesPage) {
+    return null;
+  }
 
   return (
     <div className="flex items-center">
