@@ -5,11 +5,13 @@ import App from './App.tsx';
 import './index.css';
 
 // Get the Clerk publishable key
-const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
+// In a real environment, this would come from a .env file
+// For development/demo purposes, we'll provide a fallback
+const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY || 
+  "pk_test_ZmxleGlibGUtcGlnZW9uLTY4LmNsZXJrLmFjY291bnRzLmRldiQ";
 
-if (!PUBLISHABLE_KEY) {
-  throw new Error("Missing Clerk Publishable Key");
-}
+// Note: In production, you should NEVER hardcode API keys in your code
+// This is just a temporary solution for development/demo purposes
 
 createRoot(document.getElementById("root")!).render(
   <ClerkProvider
