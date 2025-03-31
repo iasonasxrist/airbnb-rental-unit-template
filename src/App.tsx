@@ -5,6 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AppLayout } from "./components/layout/AppLayout";
+import { PropertyProvider } from "./contexts/PropertyContext";
 
 // Import pages
 import Dashboard from "./pages/Dashboard";
@@ -20,61 +21,63 @@ const queryClient = new QueryClient();
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route
-            path="/"
-            element={
-              <AppLayout>
-                <Dashboard />
-              </AppLayout>
-            }
-          />
-          <Route
-            path="/properties"
-            element={
-              <AppLayout>
-                <Properties />
-              </AppLayout>
-            }
-          />
-          <Route
-            path="/expenses"
-            element={
-              <AppLayout>
-                <Expenses />
-              </AppLayout>
-            }
-          />
-          <Route
-            path="/bookings"
-            element={
-              <AppLayout>
-                <Bookings />
-              </AppLayout>
-            }
-          />
-          <Route
-            path="/pending-payments"
-            element={
-              <AppLayout>
-                <PendingPayments />
-              </AppLayout>
-            }
-          />
-          <Route
-            path="/reports"
-            element={
-              <AppLayout>
-                <Reports />
-              </AppLayout>
-            }
-          />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
+      <PropertyProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <AppLayout>
+                  <Dashboard />
+                </AppLayout>
+              }
+            />
+            <Route
+              path="/properties"
+              element={
+                <AppLayout>
+                  <Properties />
+                </AppLayout>
+              }
+            />
+            <Route
+              path="/expenses"
+              element={
+                <AppLayout>
+                  <Expenses />
+                </AppLayout>
+              }
+            />
+            <Route
+              path="/bookings"
+              element={
+                <AppLayout>
+                  <Bookings />
+                </AppLayout>
+              }
+            />
+            <Route
+              path="/pending-payments"
+              element={
+                <AppLayout>
+                  <PendingPayments />
+                </AppLayout>
+              }
+            />
+            <Route
+              path="/reports"
+              element={
+                <AppLayout>
+                  <Reports />
+                </AppLayout>
+              }
+            />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </PropertyProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );

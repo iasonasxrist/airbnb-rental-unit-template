@@ -1,5 +1,4 @@
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Card,
   CardContent,
@@ -37,8 +36,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { EmailNotification } from "@/components/notifications/EmailNotification";
+import { useProperty } from "@/contexts/PropertyContext";
 
-// Sample data - in a real app, this would come from your database
 const initialPayments = [
   {
     id: "1",
@@ -75,7 +74,6 @@ const initialPayments = [
   },
 ];
 
-// Sample properties for the dropdown
 const properties = [
   { id: "1", name: "Beach House" },
   { id: "2", name: "City Apartment" },
@@ -83,7 +81,9 @@ const properties = [
 ];
 
 const PendingPayments = () => {
+  const { selectedProperty } = useProperty();
   const [payments, setPayments] = useState(initialPayments);
+  const [filteredPayments, setFilteredPayments] = useState(initialPayments);
   const [open, setOpen] = useState(false);
   const [emailDialogOpen, setEmailDialogOpen] = useState(false);
   const [selectedPayment, setSelectedPayment] = useState<typeof initialPayments[0] | null>(null);
@@ -98,12 +98,26 @@ const PendingPayments = () => {
   });
   const { toast } = useToast();
 
+  useEffect(() => {
+    if (selectedProperty === "all") {
+      setFilteredPayments(payments);
+    } else {
+      setFilteredPayments(payments.filter((payment) => payment.property === selectedProperty));
+    }
+  }, [selectedProperty, payments]);
+
   const handleMarkAsPaid = (id: string) => {
-    setPayments(
-      payments.map((payment) =>
-        payment.id === id ? { ...payment, status: "paid" } : payment
-      )
+    const updatedPayments = payments.map((payment) =>
+      payment.id === id ? { ...payment, status: "paid" } : payment
     );
+    setPayments(updatedPayments);
+    
+    if (selectedProperty === "all") {
+      setFilteredPayments(updatedPayments);
+    } else {
+      setFilteredPayments(updatedPayments.filter((payment) => payment.property === selectedProperty));
+    }
+    
     toast({
       title: "Payment marked as paid",
       description: `Payment ID: ${id} has been marked as paid`,
@@ -140,7 +154,15 @@ const PendingPayments = () => {
       email: newPayment.email,
     };
 
-    setPayments([...payments, payment]);
+    const updatedPayments = [...payments, payment];
+    setPayments(updatedPayments);
+    
+    if (selectedProperty === "all") {
+      setFilteredPayments(updatedPayments);
+    } else {
+      setFilteredPayments(updatedPayments.filter((payment) => payment.property === selectedProperty));
+    }
+    
     setNewPayment({
       guest: "",
       property: "",
@@ -200,6 +222,7 @@ const PendingPayments = () => {
                     setNewPayment({ ...newPayment, property: value })
                   }
                   value={newPayment.property}
+                  defaultValue={selectedProperty !== "all" ? selectedProperty : undefined}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select a property" />
@@ -286,7 +309,11 @@ const PendingPayments = () => {
 
       <Card>
         <CardHeader>
-          <CardTitle>Telephone Bookings - Pending Payments</CardTitle>
+          <CardTitle>
+            {selectedProperty !== "all"
+              ? `Telephone Bookings - Pending Payments for ${selectedProperty}`
+              : "Telephone Bookings - Pending Payments"}
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <Table>
@@ -303,7 +330,7 @@ const PendingPayments = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {payments.map((payment) => (
+              {filteredPayments.map((payment) => (
                 <TableRow key={payment.id}>
                   <TableCell className="font-medium">{payment.guest}</TableCell>
                   <TableCell>{payment.property}</TableCell>
@@ -356,6 +383,13 @@ const PendingPayments = () => {
                   </TableCell>
                 </TableRow>
               ))}
+              {filteredPayments.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={8} className="text-center py-6 text-muted-foreground">
+                    No pending payments found for this property
+                  </TableCell>
+                </TableRow>
+              )}
             </TableBody>
           </Table>
         </CardContent>

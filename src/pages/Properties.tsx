@@ -23,6 +23,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
+import { useProperty } from "@/contexts/PropertyContext";
+import { useNavigate } from "react-router-dom";
 
 // Sample data - in a real app, this would come from your database
 const initialProperties = [
@@ -60,6 +62,8 @@ const Properties = () => {
   });
   const [open, setOpen] = useState(false);
   const { toast } = useToast();
+  const { setSelectedProperty } = useProperty();
+  const navigate = useNavigate();
 
   const handleAddProperty = () => {
     if (!newProperty.name || !newProperty.address) {
@@ -88,6 +92,11 @@ const Properties = () => {
       title: "Property added",
       description: `${property.name} has been added to your properties`,
     });
+  };
+
+  const handleViewData = (propertyName: string) => {
+    setSelectedProperty(propertyName);
+    navigate("/bookings");
   };
 
   return (
@@ -176,8 +185,12 @@ const Properties = () => {
               </div>
             </CardContent>
             <CardFooter className="flex justify-between">
-              <Button variant="outline" size="sm">
-                View Details
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => handleViewData(property.name)}
+              >
+                View Data
               </Button>
               <Button size="sm">Manage</Button>
             </CardFooter>

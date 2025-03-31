@@ -3,6 +3,8 @@ import { Sidebar } from "./Sidebar";
 import { Header } from "./Header";
 import { useEffect } from "react";
 import { useToast } from "@/components/ui/use-toast";
+import { PropertySelector } from "../property/PropertySelector";
+import { useProperty } from "@/contexts/PropertyContext";
 
 interface AppLayoutProps {
   children: React.ReactNode;
@@ -10,6 +12,7 @@ interface AppLayoutProps {
 
 export function AppLayout({ children }: AppLayoutProps) {
   const { toast } = useToast();
+  const { selectedProperty } = useProperty();
 
   // This would normally be replaced with a real email notification system
   // that checks for upcoming bookings and sends emails automatically
@@ -24,18 +27,18 @@ export function AppLayout({ children }: AppLayoutProps) {
       // For now, we'll just show a toast to demonstrate the concept
       toast({
         title: "Booking Reminder System Active",
-        description: "The system is now monitoring for upcoming bookings to send email notifications.",
+        description: `${selectedProperty === "all" ? "All properties" : selectedProperty}: The system is now monitoring for upcoming bookings to send email notifications.`,
       });
     };
     
-    // Run once when component mounts
+    // Run once when component mounts or selected property changes
     checkUpcomingBookings();
     
     // In a real app, this would be a scheduled job or webhook
     const intervalId = setInterval(checkUpcomingBookings, 24 * 60 * 60 * 1000); // Check once per day
     
     return () => clearInterval(intervalId);
-  }, [toast]);
+  }, [toast, selectedProperty]);
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -43,7 +46,17 @@ export function AppLayout({ children }: AppLayoutProps) {
         <Sidebar />
         <main className="flex-1 flex flex-col">
           <Header />
-          <div className="flex-1 p-6">{children}</div>
+          <div className="flex-1 p-6">
+            <div className="mb-6 flex justify-between items-center">
+              <PropertySelector />
+              {selectedProperty !== "all" && (
+                <div className="text-sm text-muted-foreground">
+                  Viewing data for: <span className="font-medium">{selectedProperty}</span>
+                </div>
+              )}
+            </div>
+            {children}
+          </div>
         </main>
       </div>
       <footer className="bg-gray-100 py-4 px-6 text-center text-sm text-gray-600">

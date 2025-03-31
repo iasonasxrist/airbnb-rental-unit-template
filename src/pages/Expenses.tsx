@@ -44,6 +44,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useProperty } from "@/contexts/PropertyContext";
 
 // Sample data - in a real app, this would come from your database
 const initialExpenses = [
@@ -132,6 +133,7 @@ const categories = [
 ];
 
 const Expenses = () => {
+  const { selectedProperty } = useProperty();
   const [expenses, setExpenses] = useState(initialExpenses);
   const [filteredExpenses, setFilteredExpenses] = useState(initialExpenses);
   const [open, setOpen] = useState(false);
@@ -144,6 +146,15 @@ const Expenses = () => {
     property: "",
   });
   const { toast } = useToast();
+
+  // Filter expenses by selected property
+  useState(() => {
+    if (selectedProperty === "all") {
+      setFilteredExpenses(expenses);
+    } else {
+      setFilteredExpenses(expenses.filter((expense) => expense.property === selectedProperty));
+    }
+  }, [selectedProperty, expenses]);
 
   const handleAddExpense = () => {
     if (
@@ -174,11 +185,17 @@ const Expenses = () => {
     setExpenses(updatedExpenses);
     
     // Apply current filter to the updated expenses
-    if (propertyFilter === "all") {
-      setFilteredExpenses(updatedExpenses);
+    if (selectedProperty === "all") {
+      if (propertyFilter === "all") {
+        setFilteredExpenses(updatedExpenses);
+      } else {
+        setFilteredExpenses(
+          updatedExpenses.filter((exp) => exp.property === propertyFilter)
+        );
+      }
     } else {
       setFilteredExpenses(
-        updatedExpenses.filter((exp) => exp.property === propertyFilter)
+        updatedExpenses.filter((exp) => exp.property === selectedProperty)
       );
     }
 
@@ -202,10 +219,13 @@ const Expenses = () => {
   const handleFilterChange = (value: string) => {
     setPropertyFilter(value);
     
-    if (value === "all") {
-      setFilteredExpenses(expenses);
-    } else {
-      setFilteredExpenses(expenses.filter((expense) => expense.property === value));
+    // Only apply property filter if not already filtered by global property selector
+    if (selectedProperty === "all") {
+      if (value === "all") {
+        setFilteredExpenses(expenses);
+      } else {
+        setFilteredExpenses(expenses.filter((expense) => expense.property === value));
+      }
     }
   };
 
@@ -214,34 +234,36 @@ const Expenses = () => {
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold tracking-tight">Expenses</h1>
         <div className="flex space-x-2">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline">
-                <Filter className="h-4 w-4 mr-2" />
-                Filter
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuLabel>Filter by Property</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuRadioGroup
-                value={propertyFilter}
-                onValueChange={handleFilterChange}
-              >
-                <DropdownMenuRadioItem value="all">
-                  All Properties
-                </DropdownMenuRadioItem>
-                {properties.map((property) => (
-                  <DropdownMenuRadioItem
-                    key={property.id}
-                    value={property.name}
-                  >
-                    {property.name}
+          {selectedProperty === "all" && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline">
+                  <Filter className="h-4 w-4 mr-2" />
+                  Filter
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuLabel>Filter by Property</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuRadioGroup
+                  value={propertyFilter}
+                  onValueChange={handleFilterChange}
+                >
+                  <DropdownMenuRadioItem value="all">
+                    All Properties
                   </DropdownMenuRadioItem>
-                ))}
-              </DropdownMenuRadioGroup>
-            </DropdownMenuContent>
-          </DropdownMenu>
+                  {properties.map((property) => (
+                    <DropdownMenuRadioItem
+                      key={property.id}
+                      value={property.name}
+                    >
+                      {property.name}
+                    </DropdownMenuRadioItem>
+                  ))}
+                </DropdownMenuRadioGroup>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
 
           <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
@@ -323,6 +345,7 @@ const Expenses = () => {
                       setNewExpense({ ...newExpense, property: value })
                     }
                     value={newExpense.property}
+                    defaultValue={selectedProperty !== "all" ? selectedProperty : undefined}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select a property" />
@@ -348,7 +371,9 @@ const Expenses = () => {
       <Card>
         <CardHeader>
           <CardTitle>
-            {propertyFilter === "all"
+            {selectedProperty !== "all" 
+              ? `Expenses for ${selectedProperty}`
+              : propertyFilter === "all"
               ? "All Properties"
               : `Expenses for ${propertyFilter}`}
           </CardTitle>
@@ -378,6 +403,13 @@ const Expenses = () => {
                   </TableCell>
                 </TableRow>
               ))}
+              {filteredExpenses.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={5} className="text-center py-6 text-muted-foreground">
+                    No expenses found for this property
+                  </TableCell>
+                </TableRow>
+              )}
             </TableBody>
           </Table>
         </CardContent>

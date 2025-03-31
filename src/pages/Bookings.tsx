@@ -1,5 +1,4 @@
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Card,
   CardContent,
@@ -45,8 +44,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useProperty } from "@/contexts/PropertyContext";
 
-// Sample data - in a real app, this would come from your database
 const initialBookings = [
   {
     id: "1",
@@ -100,17 +99,16 @@ const initialBookings = [
   },
 ];
 
-// Sample properties for the dropdown
 const properties = [
   { id: "1", name: "Beach House" },
   { id: "2", name: "City Apartment" },
   { id: "3", name: "Mountain Cabin" },
 ];
 
-// Booking platforms
 const platforms = ["Airbnb", "Booking.com", "VRBO", "Telephone", "Other"];
 
 const Bookings = () => {
+  const { selectedProperty } = useProperty();
   const [bookings, setBookings] = useState(initialBookings);
   const [filteredBookings, setFilteredBookings] = useState(initialBookings);
   const [open, setOpen] = useState(false);
@@ -124,6 +122,20 @@ const Bookings = () => {
     amount: "",
   });
   const { toast } = useToast();
+
+  useEffect(() => {
+    let filtered = bookings;
+    
+    if (selectedProperty !== "all") {
+      filtered = filtered.filter((booking) => booking.property === selectedProperty);
+    }
+    
+    if (platformFilter !== "all") {
+      filtered = filtered.filter((booking) => booking.platform === platformFilter);
+    }
+    
+    setFilteredBookings(filtered);
+  }, [selectedProperty, platformFilter, bookings]);
 
   const handleAddBooking = () => {
     if (
@@ -156,15 +168,6 @@ const Bookings = () => {
     const updatedBookings = [...bookings, booking];
     setBookings(updatedBookings);
     
-    // Apply current filter to the updated bookings
-    if (platformFilter === "all") {
-      setFilteredBookings(updatedBookings);
-    } else {
-      setFilteredBookings(
-        updatedBookings.filter((book) => book.platform === platformFilter)
-      );
-    }
-
     setNewBooking({
       guest: "",
       property: "",
@@ -183,12 +186,6 @@ const Bookings = () => {
 
   const handleFilterChange = (value: string) => {
     setPlatformFilter(value);
-    
-    if (value === "all") {
-      setFilteredBookings(bookings);
-    } else {
-      setFilteredBookings(bookings.filter((booking) => booking.platform === value));
-    }
   };
 
   return (
@@ -200,7 +197,7 @@ const Bookings = () => {
             <DropdownMenuTrigger asChild>
               <Button variant="outline">
                 <Filter className="h-4 w-4 mr-2" />
-                Filter
+                Filter Platform
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
@@ -255,6 +252,7 @@ const Bookings = () => {
                       setNewBooking({ ...newBooking, property: value })
                     }
                     value={newBooking.property}
+                    defaultValue={selectedProperty !== "all" ? selectedProperty : undefined}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select a property" />
@@ -340,7 +338,11 @@ const Bookings = () => {
       <Card>
         <CardHeader>
           <CardTitle>
-            {platformFilter === "all"
+            {selectedProperty !== "all" 
+              ? platformFilter === "all" 
+                ? `Bookings for ${selectedProperty}`
+                : `${platformFilter} Bookings for ${selectedProperty}`
+              : platformFilter === "all"
               ? "All Bookings"
               : `${platformFilter} Bookings`}
           </CardTitle>
@@ -385,6 +387,13 @@ const Bookings = () => {
                   </TableCell>
                 </TableRow>
               ))}
+              {filteredBookings.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={6} className="text-center py-6 text-muted-foreground">
+                    No bookings found for this property
+                  </TableCell>
+                </TableRow>
+              )}
             </TableBody>
           </Table>
         </CardContent>
