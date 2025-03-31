@@ -8,7 +8,7 @@ import './index.css';
 // In a real environment, this would come from a .env file
 // For development/demo purposes, we'll provide a fallback
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY || 
-  "pk_test_ZmxleGlibGUtcGlnZW9uLTY4LmNsZXJrLmFjY291bnRzLmRldiQ";
+  "pk_test_YW11c2VkLW1lZXJrYXQtODguY2xlcmsuYWNjb3VudHMuZGV2JA";
 
 // Note: In production, you should NEVER hardcode API keys in your code
 // This is just a temporary solution for development/demo purposes
