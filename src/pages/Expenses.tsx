@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Card,
   CardContent,
@@ -147,8 +147,8 @@ const Expenses = () => {
   });
   const { toast } = useToast();
 
-  // Filter expenses by selected property
-  useState(() => {
+  // Filter expenses by selected property - changed from useState to useEffect
+  useEffect(() => {
     if (selectedProperty === "all") {
       setFilteredExpenses(expenses);
     } else {
