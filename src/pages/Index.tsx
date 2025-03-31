@@ -16,6 +16,9 @@ const Index = () => {
             <span className="text-2xl font-bold text-airbnb-primary">AirCost</span>
           </div>
           <div className="flex items-center space-x-2">
+            <Link to="/pricing">
+              <Button variant="ghost">Pricing</Button>
+            </Link>
             {isSignedIn ? (
               <Link to="/dashboard">
                 <Button>Go to Dashboard</Button>
@@ -53,12 +56,19 @@ const Index = () => {
                 </Button>
               </Link>
             ) : (
-              <Link to="/sign-up">
-                <Button size="lg" className="gap-2">
-                  Start For Free
-                  <ArrowRight className="h-4 w-4" />
-                </Button>
-              </Link>
+              <div className="flex flex-col sm:flex-row gap-4">
+                <Link to="/sign-up">
+                  <Button size="lg" className="gap-2 w-full sm:w-auto">
+                    Start For Free
+                    <ArrowRight className="h-4 w-4" />
+                  </Button>
+                </Link>
+                <Link to="/pricing">
+                  <Button size="lg" variant="outline" className="w-full sm:w-auto">
+                    View Pricing
+                  </Button>
+                </Link>
+              </div>
             )}
           </div>
           <div className="md:w-1/2">
@@ -142,11 +152,18 @@ const Index = () => {
               </Button>
             </Link>
           ) : (
-            <Link to="/sign-up">
-              <Button size="lg" variant="secondary">
-                Create Your Free Account
-              </Button>
-            </Link>
+            <div className="flex flex-col sm:flex-row justify-center gap-4">
+              <Link to="/sign-up">
+                <Button size="lg" variant="secondary">
+                  Create Your Free Account
+                </Button>
+              </Link>
+              <Link to="/pricing">
+                <Button size="lg" variant="outline" className="bg-transparent border-white text-white hover:bg-white/10">
+                  View Pricing Plans
+                </Button>
+              </Link>
+            </div>
           )}
         </div>
       </section>
@@ -160,6 +177,7 @@ const Index = () => {
               <p className="text-sm text-gray-600 mt-1">© {new Date().getFullYear()} AirCost. All rights reserved.</p>
             </div>
             <div className="flex space-x-6">
+              <Link to="/pricing" className="text-gray-600 hover:text-gray-900">Pricing</Link>
               <a href="#" className="text-gray-600 hover:text-gray-900">Privacy Policy</a>
               <a href="#" className="text-gray-600 hover:text-gray-900">Terms of Service</a>
               <a href="#" className="text-gray-600 hover:text-gray-900">Contact</a>

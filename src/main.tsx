@@ -5,12 +5,10 @@ import App from './App.tsx';
 import './index.css';
 
 // Get the Clerk publishable key
-// In a real environment, this would come from a .env file
-// For development/demo purposes, we'll provide a fallback
-const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY!
+const PUBLISHABLE_KEY = "pk_test_YW11c2VkLW1lZXJrYXQtODguY2xlcmsuYWNjb3VudHMuZGV2JA";
 
 if (!PUBLISHABLE_KEY) {
-  throw new Error('Add your Clerk Publishable Key to the .env file')
+  throw new Error('Missing Clerk Publishable Key')
 }
 
 createRoot(document.getElementById("root")!).render(

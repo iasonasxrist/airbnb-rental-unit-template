@@ -19,6 +19,7 @@ import Reports from "./pages/Reports";
 import NotFound from "./pages/NotFound";
 import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
+import Pricing from "./pages/Pricing";
 
 // Protected route component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -52,6 +53,7 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/sign-in" element={<SignIn />} />
             <Route path="/sign-up" element={<SignUp />} />
+            <Route path="/pricing" element={<Pricing />} />
             
             {/* Protected Routes */}
             <Route
@@ -66,6 +68,16 @@ const App = () => (
             />
             <Route
               path="/properties"
+              element={
+                <ProtectedRoute>
+                  <AppLayout>
+                    <Properties />
+                  </AppLayout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/property/:propertyId"
               element={
                 <ProtectedRoute>
                   <AppLayout>
