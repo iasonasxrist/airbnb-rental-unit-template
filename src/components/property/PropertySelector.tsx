@@ -8,6 +8,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Building } from "lucide-react";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 // Sample properties - in a real app, this would come from your database
 const properties = [
@@ -18,6 +19,7 @@ const properties = [
 
 export function PropertySelector() {
   const { selectedProperty, setSelectedProperty } = useProperty();
+  const isMobile = useIsMobile();
 
   return (
     <div className="flex items-center space-x-2">
@@ -26,7 +28,7 @@ export function PropertySelector() {
         value={selectedProperty}
         onValueChange={setSelectedProperty}
       >
-        <SelectTrigger className="w-[180px]">
+        <SelectTrigger className={`${isMobile ? "w-full" : "w-[180px]"}`}>
           <SelectValue placeholder="Select property" />
         </SelectTrigger>
         <SelectContent>

@@ -8,6 +8,7 @@ import { AppLayout } from "./components/layout/AppLayout";
 import { PropertyProvider } from "./contexts/PropertyContext";
 
 // Import pages
+import Index from "./pages/Index";
 import Dashboard from "./pages/Dashboard";
 import Properties from "./pages/Properties";
 import Expenses from "./pages/Expenses";
@@ -16,7 +17,14 @@ import PendingPayments from "./pages/PendingPayments";
 import Reports from "./pages/Reports";
 import NotFound from "./pages/NotFound";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      retry: 1,
+    },
+  },
+});
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -26,8 +34,9 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <Routes>
+            <Route path="/" element={<Index />} />
             <Route
-              path="/"
+              path="/dashboard"
               element={
                 <AppLayout>
                   <Dashboard />

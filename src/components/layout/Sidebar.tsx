@@ -1,16 +1,26 @@
 
 import { Home, DollarSign, Building, Phone, Calendar, BarChart } from "lucide-react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export function Sidebar() {
   const location = useLocation();
   const [collapsed, setCollapsed] = useState(false);
+  const isMobile = useIsMobile();
+  const navigate = useNavigate();
+
+  // Auto-collapse sidebar on mobile
+  useEffect(() => {
+    if (isMobile) {
+      setCollapsed(true);
+    }
+  }, [isMobile]);
 
   const navigation = [
-    { name: "Dashboard", href: "/", icon: Home },
+    { name: "Dashboard", href: "/dashboard", icon: Home },
     { name: "Properties", href: "/properties", icon: Building },
     { name: "Expenses", href: "/expenses", icon: DollarSign },
     { name: "Bookings", href: "/bookings", icon: Calendar },
@@ -21,13 +31,16 @@ export function Sidebar() {
   return (
     <div
       className={cn(
-        "bg-sidebar flex flex-col border-r border-sidebar-border h-screen sticky top-0 transition-all duration-300",
+        "bg-sidebar flex flex-col border-r border-sidebar-border h-screen sticky top-0 transition-all duration-300 z-10",
         collapsed ? "w-16" : "w-64"
       )}
     >
       <div className="p-4 flex items-center border-b border-sidebar-border h-16">
         {!collapsed && (
-          <span className="text-xl font-bold text-airbnb-primary">
+          <span 
+            className="text-xl font-bold text-airbnb-primary cursor-pointer" 
+            onClick={() => navigate("/")}
+          >
             AirCost
           </span>
         )}
@@ -36,6 +49,7 @@ export function Sidebar() {
           size="icon"
           className={cn("ml-auto", collapsed && "mx-auto")}
           onClick={() => setCollapsed(!collapsed)}
+          aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
         >
           {collapsed ? (
             <svg
@@ -70,7 +84,7 @@ export function Sidebar() {
           )}
         </Button>
       </div>
-      <nav className="flex-1 p-2 space-y-1">
+      <nav className="flex-1 p-2 space-y-1 overflow-y-auto">
         {navigation.map((item) => (
           <Link
             key={item.name}
@@ -82,6 +96,8 @@ export function Sidebar() {
                 : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
               collapsed ? "justify-center" : ""
             )}
+            aria-label={item.name}
+            title={collapsed ? item.name : ""}
           >
             <item.icon className={cn("h-5 w-5", collapsed ? "" : "mr-2")} />
             {!collapsed && <span>{item.name}</span>}

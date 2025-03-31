@@ -5,6 +5,7 @@ import { useEffect } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { PropertySelector } from "../property/PropertySelector";
 import { useProperty } from "@/contexts/PropertyContext";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface AppLayoutProps {
   children: React.ReactNode;
@@ -13,6 +14,7 @@ interface AppLayoutProps {
 export function AppLayout({ children }: AppLayoutProps) {
   const { toast } = useToast();
   const { selectedProperty } = useProperty();
+  const isMobile = useIsMobile();
 
   // This would normally be replaced with a real email notification system
   // that checks for upcoming bookings and sends emails automatically
@@ -46,8 +48,8 @@ export function AppLayout({ children }: AppLayoutProps) {
         <Sidebar />
         <main className="flex-1 flex flex-col">
           <Header />
-          <div className="flex-1 p-6">
-            <div className="mb-6 flex justify-between items-center">
+          <div className="flex-1 p-4 md:p-6">
+            <div className="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
               <PropertySelector />
               {selectedProperty !== "all" && (
                 <div className="text-sm text-muted-foreground">
