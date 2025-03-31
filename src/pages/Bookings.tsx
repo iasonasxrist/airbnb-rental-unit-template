@@ -124,6 +124,7 @@ const Bookings = () => {
   const { toast } = useToast();
 
   useEffect(() => {
+    console.log("Filtering with property:", selectedProperty);
     let filtered = bookings;
     
     if (selectedProperty !== "all") {
@@ -200,7 +201,7 @@ const Bookings = () => {
                 Filter Platform
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent>
+            <DropdownMenuContent className="bg-white">
               <DropdownMenuLabel>Filter by Platform</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuRadioGroup
@@ -226,7 +227,7 @@ const Bookings = () => {
                 Add Booking
               </Button>
             </DialogTrigger>
-            <DialogContent>
+            <DialogContent className="bg-white">
               <DialogHeader>
                 <DialogTitle>Add New Booking</DialogTitle>
                 <DialogDescription>
@@ -257,7 +258,7 @@ const Bookings = () => {
                     <SelectTrigger>
                       <SelectValue placeholder="Select a property" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="bg-white">
                       {properties.map((property) => (
                         <SelectItem key={property.id} value={property.name}>
                           {property.name}
