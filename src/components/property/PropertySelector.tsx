@@ -64,7 +64,13 @@ export function PropertySelector() {
     <div className="flex items-center">
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <button className={`flex items-center text-lg font-semibold gap-1 hover:text-primary transition-all ${selectedProperty === "all" ? "px-4 py-2 bg-primary/10 text-primary rounded-md animate-pulse" : ""}`}>
+          <button 
+            className={`flex items-center text-lg font-semibold gap-1 hover:text-primary transition-all ${
+              selectedProperty === "all" 
+                ? "px-4 py-2 bg-primary/10 text-primary rounded-md animate-pulse" 
+                : ""
+            }`}
+          >
             {selectedProperty === "all" ? "Select a Property" : selectedProperty}
             <ChevronDown className="h-4 w-4" />
           </button>

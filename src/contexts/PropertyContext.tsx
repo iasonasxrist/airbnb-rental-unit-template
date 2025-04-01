@@ -34,7 +34,21 @@ export const PropertyProvider = ({ children }: { children: ReactNode }) => {
   // Log when selectedProperty changes for debugging
   useEffect(() => {
     console.log("PropertyContext: selectedProperty changed to", selectedProperty);
+    
+    // Store the selected property in localStorage to persist between page refreshes
+    if (selectedProperty !== "all") {
+      localStorage.setItem("selectedProperty", selectedProperty);
+    }
   }, [selectedProperty]);
+  
+  // Load selected property from localStorage on initial render
+  useEffect(() => {
+    const savedProperty = localStorage.getItem("selectedProperty");
+    if (savedProperty) {
+      setSelectedPropertyState(savedProperty);
+      console.log("PropertyContext: Loaded saved property from localStorage:", savedProperty);
+    }
+  }, []);
 
   // Rate-limited version of setSelectedProperty
   const setSelectedProperty = useCallback((property: string) => {
