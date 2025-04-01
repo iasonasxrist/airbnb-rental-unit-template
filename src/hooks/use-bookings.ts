@@ -98,10 +98,12 @@ export function useBookings() {
     
     if (selectedProperty && selectedProperty !== "all") {
       filtered = filtered.filter((booking) => booking.property === selectedProperty);
+      console.log("After property filter:", filtered.length, "bookings");
     }
     
     if (platformFilter !== "all") {
       filtered = filtered.filter((booking) => booking.platform === platformFilter);
+      console.log("After platform filter:", filtered.length, "bookings");
     }
     
     setFilteredBookings(filtered);

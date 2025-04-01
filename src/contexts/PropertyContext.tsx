@@ -1,5 +1,5 @@
 
-import React, { createContext, useContext, useState, ReactNode, useCallback } from "react";
+import React, { createContext, useContext, useState, ReactNode, useCallback, useEffect } from "react";
 import { toast } from "sonner";
 
 // Define rate limiting parameters
@@ -30,6 +30,11 @@ export const PropertyProvider = ({ children }: { children: ReactNode }) => {
   const [lastCallTime, setLastCallTime] = useState<number>(0);
   const [callsInWindow, setCallsInWindow] = useState<number>(0);
   const [windowStartTime, setWindowStartTime] = useState<number>(Date.now());
+
+  // Log when selectedProperty changes for debugging
+  useEffect(() => {
+    console.log("PropertyContext: selectedProperty changed to", selectedProperty);
+  }, [selectedProperty]);
 
   // Rate-limited version of setSelectedProperty
   const setSelectedProperty = useCallback((property: string) => {

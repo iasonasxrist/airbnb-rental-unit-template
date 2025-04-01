@@ -41,14 +41,8 @@ export function PropertySelector() {
   }, []);
 
   const handlePropertySelect = (propertyName: string) => {
+    console.log("Setting selected property to:", propertyName);
     setSelectedProperty(propertyName);
-  };
-
-  const getSelectedPropertyName = () => {
-    if (selectedProperty === "all") {
-      return "All Properties";
-    }
-    return selectedProperty;
   };
 
   // If we're on the properties page, return null, but AFTER all hooks are called
@@ -61,7 +55,7 @@ export function PropertySelector() {
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <button className="flex items-center text-lg font-semibold gap-1 hover:text-primary">
-            {getSelectedPropertyName()}
+            {selectedProperty === "all" ? "All Properties" : selectedProperty}
             <ChevronDown className="h-4 w-4" />
           </button>
         </DropdownMenuTrigger>
