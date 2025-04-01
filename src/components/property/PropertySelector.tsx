@@ -12,17 +12,24 @@ import { Property, propertyApi } from "@/lib/supabase";
 import { useEffect, useState } from "react";
 import { properties } from "@/hooks/use-bookings";
 
+// Define a simpler type for the dropdown that only needs id and name
+type PropertyOption = {
+  id: string;
+  name: string;
+};
+
 export function PropertySelector() {
   const { selectedProperty, setSelectedProperty } = useProperty();
   const location = useLocation();
-  const [propertiesList, setPropertiesList] = useState<Property[]>([]);
+  const [propertiesList, setPropertiesList] = useState<PropertyOption[]>([]);
   const isPropertiesPage = location.pathname === "/properties";
   
   useEffect(() => {
     const fetchProperties = async () => {
       try {
         const propertiesData = await propertyApi.getProperties();
-        setPropertiesList(propertiesData);
+        // Map the full Property objects to just the id and name needed for the dropdown
+        setPropertiesList(propertiesData.map(p => ({ id: p.id, name: p.name })));
       } catch (error) {
         console.error("Failed to fetch properties:", error);
         // Fallback to local properties if API fails
@@ -67,16 +74,6 @@ export function PropertySelector() {
           </DropdownMenuItem>
           
           {propertiesList.map((property) => (
-            <DropdownMenuItem
-              key={property.id}
-              onClick={() => handlePropertySelect(property.name)}
-              className={selectedProperty === property.name ? "bg-gray-100" : ""}
-            >
-              {property.name}
-            </DropdownMenuItem>
-          ))}
-          
-          {!propertiesList.length && properties.map((property) => (
             <DropdownMenuItem
               key={property.id}
               onClick={() => handlePropertySelect(property.name)}
