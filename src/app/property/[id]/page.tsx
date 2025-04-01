@@ -47,6 +47,7 @@ const PropertyDetails = () => {
       const foundProperty = initialProperties.find(p => p.id === id);
       if (foundProperty) {
         setProperty(foundProperty);
+        // Important - set the selected property when viewing details
         setSelectedProperty(foundProperty.name);
       } else {
         navigate("/properties");
