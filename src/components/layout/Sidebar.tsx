@@ -10,6 +10,8 @@ import {
   SheetContent, 
   SheetTrigger 
 } from "@/components/ui/sheet";
+import { useProperty } from "@/contexts/PropertyContext";
+import { motion } from "framer-motion";
 
 export function Sidebar() {
   const location = useLocation();
@@ -17,6 +19,8 @@ export function Sidebar() {
   const isMobile = useIsMobile();
   const navigate = useNavigate();
   const [showMobileMenu, setShowMobileMenu] = useState(false);
+  const { selectedProperty } = useProperty();
+  const showNavigation = selectedProperty !== "all";
 
   // Auto-collapse sidebar on mobile
   useEffect(() => {
@@ -83,22 +87,41 @@ export function Sidebar() {
                 </span>
               </div>
               <nav className="flex-1 p-2 space-y-1 overflow-y-auto">
-                {navigation.map((item) => (
-                  <Link
-                    key={item.name}
-                    to={item.href}
-                    className={cn(
-                      "flex items-center px-3 py-3 rounded-md text-sm font-medium transition-colors",
-                      location.pathname === item.href
-                        ? "bg-sidebar-accent text-sidebar-accent-foreground"
-                        : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-                    )}
-                    onClick={() => setShowMobileMenu(false)}
+                {showNavigation ? (
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3, staggerChildren: 0.1 }}
+                    className="space-y-1"
                   >
-                    <item.icon className="h-5 w-5 mr-3" />
-                    <span>{item.name}</span>
-                  </Link>
-                ))}
+                    {navigation.map((item) => (
+                      <motion.div
+                        key={item.name}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                      >
+                        <Link
+                          to={item.href}
+                          className={cn(
+                            "flex items-center px-3 py-3 rounded-md text-sm font-medium transition-colors",
+                            location.pathname === item.href
+                              ? "bg-sidebar-accent text-sidebar-accent-foreground"
+                              : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                          )}
+                          onClick={() => setShowMobileMenu(false)}
+                        >
+                          <item.icon className="h-5 w-5 mr-3" />
+                          <span>{item.name}</span>
+                        </Link>
+                      </motion.div>
+                    ))}
+                  </motion.div>
+                ) : (
+                  <div className="px-3 py-8 text-center text-sidebar-foreground/70">
+                    <p className="mb-2">Please select a property</p>
+                    <p className="text-xs">Navigation will appear here after selection</p>
+                  </div>
+                )}
               </nav>
             </div>
           </SheetContent>
@@ -165,24 +188,67 @@ export function Sidebar() {
         </Button>
       </div>
       <nav className="flex-1 p-2 space-y-1 overflow-y-auto">
-        {navigation.map((item) => (
-          <Link
-            key={item.name}
-            to={item.href}
-            className={cn(
-              "flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors",
-              location.pathname === item.href
-                ? "bg-sidebar-accent text-sidebar-accent-foreground"
-                : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
-              collapsed ? "justify-center" : ""
-            )}
-            aria-label={item.name}
-            title={collapsed ? item.name : ""}
+        {showNavigation ? (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, staggerChildren: 0.1 }}
+            className="space-y-1"
           >
-            <item.icon className={cn("h-5 w-5", collapsed ? "" : "mr-2")} />
-            {!collapsed && <span>{item.name}</span>}
-          </Link>
-        ))}
+            {navigation.map((item) => (
+              <motion.div
+                key={item.name}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+              >
+                <Link
+                  key={item.name}
+                  to={item.href}
+                  className={cn(
+                    "flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors",
+                    location.pathname === item.href
+                      ? "bg-sidebar-accent text-sidebar-accent-foreground"
+                      : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+                    collapsed ? "justify-center" : ""
+                  )}
+                  aria-label={item.name}
+                  title={collapsed ? item.name : ""}
+                >
+                  <item.icon className={cn("h-5 w-5", collapsed ? "" : "mr-2")} />
+                  {!collapsed && <span>{item.name}</span>}
+                </Link>
+              </motion.div>
+            ))}
+          </motion.div>
+        ) : (
+          <div className={cn(
+            "text-center text-sidebar-foreground/70 py-6",
+            collapsed ? "px-1" : "px-3"
+          )}>
+            {!collapsed ? (
+              <>
+                <p className="mb-2">Please select a property</p>
+                <p className="text-xs">Navigation will appear after selection</p>
+              </>
+            ) : (
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="mx-auto text-sidebar-foreground/50"
+              >
+                <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+            )}
+          </div>
+        )}
       </nav>
     </div>
   );

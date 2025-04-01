@@ -11,6 +11,7 @@ import { useLocation } from "react-router-dom";
 import { propertyApi } from "@/lib/supabase";
 import { useEffect, useState } from "react";
 import { properties } from "@/hooks/use-bookings";
+import { toast } from "sonner";
 
 // Define a simpler type for the dropdown that only needs id and name
 type PropertyOption = {
@@ -43,6 +44,14 @@ export function PropertySelector() {
 
   const handlePropertySelect = (propertyName: string) => {
     console.log("PropertySelector: Setting selected property to:", propertyName);
+    
+    // Show toast notification
+    if (propertyName !== "all") {
+      toast.success(`Now viewing ${propertyName}`);
+    } else {
+      toast.info("Please select a property to continue");
+    }
+    
     setSelectedProperty(propertyName);
   };
 
@@ -55,19 +64,12 @@ export function PropertySelector() {
     <div className="flex items-center">
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <button className="flex items-center text-lg font-semibold gap-1 hover:text-primary">
-            {selectedProperty === "all" ? "All Properties" : selectedProperty}
+          <button className={`flex items-center text-lg font-semibold gap-1 hover:text-primary transition-all ${selectedProperty === "all" ? "px-4 py-2 bg-primary/10 text-primary rounded-md animate-pulse" : ""}`}>
+            {selectedProperty === "all" ? "Select a Property" : selectedProperty}
             <ChevronDown className="h-4 w-4" />
           </button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start" className="w-56 bg-white z-50">
-          <DropdownMenuItem 
-            onClick={() => handlePropertySelect("all")}
-            className={selectedProperty === "all" ? "bg-gray-100" : ""}
-          >
-            All Properties
-          </DropdownMenuItem>
-          
           {propertiesList.map((property) => (
             <DropdownMenuItem
               key={property.id}
