@@ -93,19 +93,27 @@ export function useBookings() {
 
   // Filter bookings based on selected property and platform
   useEffect(() => {
-    console.log("Filtering with property:", selectedProperty, "and platform:", platformFilter);
-    let filtered = bookings;
+    console.log("useBookings: Filtering with property:", selectedProperty, "and platform:", platformFilter);
     
+    // Start with all bookings
+    let filtered = [...bookings];
+    
+    // Apply property filter
     if (selectedProperty && selectedProperty !== "all") {
+      console.log("useBookings: Filtering by property:", selectedProperty);
       filtered = filtered.filter((booking) => booking.property === selectedProperty);
-      console.log("After property filter:", filtered.length, "bookings");
+      console.log("useBookings: After property filter:", filtered.length, "bookings");
     }
     
+    // Apply platform filter
     if (platformFilter !== "all") {
+      console.log("useBookings: Filtering by platform:", platformFilter);
       filtered = filtered.filter((booking) => booking.platform === platformFilter);
-      console.log("After platform filter:", filtered.length, "bookings");
+      console.log("useBookings: After platform filter:", filtered.length, "bookings");
     }
     
+    // Update filtered bookings
+    console.log("useBookings: Final filtered bookings:", filtered.length);
     setFilteredBookings(filtered);
   }, [selectedProperty, platformFilter, bookings]);
 

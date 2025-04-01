@@ -8,7 +8,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useLocation } from "react-router-dom";
-import { Property, propertyApi } from "@/lib/supabase";
+import { propertyApi } from "@/lib/supabase";
 import { useEffect, useState } from "react";
 import { properties } from "@/hooks/use-bookings";
 
@@ -29,7 +29,8 @@ export function PropertySelector() {
       try {
         const propertiesData = await propertyApi.getProperties();
         // Map the full Property objects to just the id and name needed for the dropdown
-        setPropertiesList(propertiesData.map(p => ({ id: p.id, name: p.name })));
+        const mappedProperties: PropertyOption[] = propertiesData.map(p => ({ id: p.id, name: p.name }));
+        setPropertiesList(mappedProperties);
       } catch (error) {
         console.error("Failed to fetch properties:", error);
         // Fallback to local properties if API fails
@@ -41,7 +42,7 @@ export function PropertySelector() {
   }, []);
 
   const handlePropertySelect = (propertyName: string) => {
-    console.log("Setting selected property to:", propertyName);
+    console.log("PropertySelector: Setting selected property to:", propertyName);
     setSelectedProperty(propertyName);
   };
 

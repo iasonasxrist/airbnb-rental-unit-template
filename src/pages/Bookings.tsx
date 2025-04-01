@@ -31,6 +31,11 @@ const Bookings = () => {
     addBooking,
   } = useBookings();
 
+  // Log changes to filtered bookings for debugging
+  useEffect(() => {
+    console.log("Bookings page: filteredBookings length:", filteredBookings.length);
+  }, [filteredBookings]);
+
   const handleAddBooking = (newBookingData: any) => {
     if (
       !newBookingData.guest ||
