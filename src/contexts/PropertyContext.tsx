@@ -24,7 +24,7 @@ export const PropertyProvider = ({ children }: { children: ReactNode }) => {
   const [selectedProperty, setSelectedPropertyState] = useState<string>("all");
   const [hasSelectedProperty, setHasSelectedProperty] = useState<boolean>(false);
   
-  // Log when selectedProperty changes for debugging
+  // Set up the selected property effect
   useEffect(() => {
     console.log("PropertyContext: selectedProperty changed to", selectedProperty);
     

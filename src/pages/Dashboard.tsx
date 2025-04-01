@@ -6,9 +6,16 @@ import { PendingPayments } from "@/components/dashboard/PendingPayments";
 import { ExpenseChart } from "@/components/dashboard/ExpenseChart";
 import { useProperty } from "@/contexts/PropertyContext";
 import { motion } from "framer-motion";
+import { useEffect } from "react";
 
 const Dashboard = () => {
   const { hasSelectedProperty, selectedProperty } = useProperty();
+
+  // Add effect to log when property changes and trigger re-render
+  useEffect(() => {
+    console.log("Dashboard: Property changed to", selectedProperty);
+    // You could load property-specific data here
+  }, [selectedProperty]);
 
   if (!hasSelectedProperty) {
     return (

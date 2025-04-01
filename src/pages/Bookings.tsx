@@ -1,4 +1,3 @@
-
 import { useEffect } from "react";
 import {
   Card,
@@ -31,10 +30,10 @@ const Bookings = () => {
     addBooking,
   } = useBookings();
 
-  // Log changes to filtered bookings for debugging
   useEffect(() => {
+    console.log("Bookings page: Property changed to", selectedProperty);
     console.log("Bookings page: filteredBookings length:", filteredBookings.length);
-  }, [filteredBookings]);
+  }, [filteredBookings, selectedProperty]);
 
   const handleAddBooking = (newBookingData: any) => {
     if (

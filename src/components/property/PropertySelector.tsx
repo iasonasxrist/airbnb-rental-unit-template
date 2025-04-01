@@ -11,7 +11,6 @@ import { useLocation } from "react-router-dom";
 import { propertyApi } from "@/lib/supabase";
 import { useEffect, useState } from "react";
 import { properties } from "@/hooks/use-bookings";
-import { toast } from "sonner";
 
 // Define a simpler type for the dropdown that only needs id and name
 type PropertyOption = {

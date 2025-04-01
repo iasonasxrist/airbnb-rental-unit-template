@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import {
   Card,
@@ -143,7 +144,9 @@ const Expenses = () => {
   });
   const { toast } = useToast();
 
+  // Update the useEffect to include selectedProperty as a dependency
   useEffect(() => {
+    console.log("Expenses: Filtering expenses for property:", selectedProperty);
     if (selectedProperty === "all") {
       setFilteredExpenses(expenses);
     } else {
