@@ -11,6 +11,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useProperty } from "@/contexts/PropertyContext";
 
 interface BookingFiltersProps {
   platformFilter: string;
@@ -23,31 +24,35 @@ export function BookingFilters({
   onPlatformFilterChange,
   platforms 
 }: BookingFiltersProps) {
+  const { selectedProperty, setSelectedProperty } = useProperty();
+  
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="outline">
-          <Filter className="h-4 w-4 mr-2" />
-          Filter Platform
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent className="bg-white">
-        <DropdownMenuLabel>Filter by Platform</DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        <DropdownMenuRadioGroup
-          value={platformFilter}
-          onValueChange={onPlatformFilterChange}
-        >
-          <DropdownMenuRadioItem value="all">
-            All Platforms
-          </DropdownMenuRadioItem>
-          {platforms.map((platform) => (
-            <DropdownMenuRadioItem key={platform} value={platform}>
-              {platform}
+    <div className="flex space-x-2">
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="outline">
+            <Filter className="h-4 w-4 mr-2" />
+            Filter Platform
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent className="bg-white">
+          <DropdownMenuLabel>Filter by Platform</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuRadioGroup
+            value={platformFilter}
+            onValueChange={onPlatformFilterChange}
+          >
+            <DropdownMenuRadioItem value="all">
+              All Platforms
             </DropdownMenuRadioItem>
-          ))}
-        </DropdownMenuRadioGroup>
-      </DropdownMenuContent>
-    </DropdownMenu>
+            {platforms.map((platform) => (
+              <DropdownMenuRadioItem key={platform} value={platform}>
+                {platform}
+              </DropdownMenuRadioItem>
+            ))}
+          </DropdownMenuRadioGroup>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
   );
 }

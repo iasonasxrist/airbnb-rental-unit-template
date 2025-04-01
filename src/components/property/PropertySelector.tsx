@@ -10,20 +10,23 @@ import {
 import { useLocation } from "react-router-dom";
 import { Property, propertyApi } from "@/lib/supabase";
 import { useEffect, useState } from "react";
+import { properties } from "@/hooks/use-bookings";
 
 export function PropertySelector() {
   const { selectedProperty, setSelectedProperty } = useProperty();
   const location = useLocation();
-  const [properties, setProperties] = useState<Property[]>([]);
+  const [propertiesList, setPropertiesList] = useState<Property[]>([]);
   const isPropertiesPage = location.pathname === "/properties";
   
   useEffect(() => {
     const fetchProperties = async () => {
       try {
         const propertiesData = await propertyApi.getProperties();
-        setProperties(propertiesData);
+        setPropertiesList(propertiesData);
       } catch (error) {
         console.error("Failed to fetch properties:", error);
+        // Fallback to local properties if API fails
+        setPropertiesList(properties.map(p => ({ id: p.id, name: p.name })));
       }
     };
 
@@ -55,7 +58,7 @@ export function PropertySelector() {
             <ChevronDown className="h-4 w-4" />
           </button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="start" className="w-56 bg-white">
+        <DropdownMenuContent align="start" className="w-56 bg-white z-50">
           <DropdownMenuItem 
             onClick={() => handlePropertySelect("all")}
             className={selectedProperty === "all" ? "bg-gray-100" : ""}
@@ -63,7 +66,17 @@ export function PropertySelector() {
             All Properties
           </DropdownMenuItem>
           
-          {properties.map((property) => (
+          {propertiesList.map((property) => (
+            <DropdownMenuItem
+              key={property.id}
+              onClick={() => handlePropertySelect(property.name)}
+              className={selectedProperty === property.name ? "bg-gray-100" : ""}
+            >
+              {property.name}
+            </DropdownMenuItem>
+          ))}
+          
+          {!propertiesList.length && properties.map((property) => (
             <DropdownMenuItem
               key={property.id}
               onClick={() => handlePropertySelect(property.name)}

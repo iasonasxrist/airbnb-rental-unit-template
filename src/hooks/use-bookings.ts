@@ -93,10 +93,10 @@ export function useBookings() {
 
   // Filter bookings based on selected property and platform
   useEffect(() => {
-    console.log("Filtering with property:", selectedProperty);
+    console.log("Filtering with property:", selectedProperty, "and platform:", platformFilter);
     let filtered = bookings;
     
-    if (selectedProperty !== "all") {
+    if (selectedProperty && selectedProperty !== "all") {
       filtered = filtered.filter((booking) => booking.property === selectedProperty);
     }
     
