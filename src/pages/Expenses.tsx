@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import {
   Card,
@@ -46,7 +45,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useProperty } from "@/contexts/PropertyContext";
 
-// Sample data - in a real app, this would come from your database
 const initialExpenses = [
   {
     id: "1",
@@ -114,14 +112,12 @@ const initialExpenses = [
   },
 ];
 
-// Sample properties for the dropdown
 const properties = [
   { id: "1", name: "Beach House" },
   { id: "2", name: "City Apartment" },
   { id: "3", name: "Mountain Cabin" },
 ];
 
-// Expense categories
 const categories = [
   "Cleaning",
   "Maintenance",
@@ -133,7 +129,7 @@ const categories = [
 ];
 
 const Expenses = () => {
-  const { selectedProperty } = useProperty();
+  const { selectedProperty, hasSelectedProperty } = useProperty();
   const [expenses, setExpenses] = useState(initialExpenses);
   const [filteredExpenses, setFilteredExpenses] = useState(initialExpenses);
   const [open, setOpen] = useState(false);
@@ -147,7 +143,6 @@ const Expenses = () => {
   });
   const { toast } = useToast();
 
-  // Filter expenses by selected property - changed from useState to useEffect
   useEffect(() => {
     if (selectedProperty === "all") {
       setFilteredExpenses(expenses);
@@ -155,6 +150,17 @@ const Expenses = () => {
       setFilteredExpenses(expenses.filter((expense) => expense.property === selectedProperty));
     }
   }, [selectedProperty, expenses]);
+
+  if (!hasSelectedProperty) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[80vh] text-center p-6">
+        <h2 className="text-2xl font-semibold mb-2">Please Select a Property</h2>
+        <p className="text-muted-foreground">
+          You need to select a property from the dropdown to view expenses.
+        </p>
+      </div>
+    );
+  }
 
   const handleAddExpense = () => {
     if (
@@ -184,7 +190,6 @@ const Expenses = () => {
     const updatedExpenses = [...expenses, expense];
     setExpenses(updatedExpenses);
     
-    // Apply current filter to the updated expenses
     if (selectedProperty === "all") {
       if (propertyFilter === "all") {
         setFilteredExpenses(updatedExpenses);
@@ -219,7 +224,6 @@ const Expenses = () => {
   const handleFilterChange = (value: string) => {
     setPropertyFilter(value);
     
-    // Only apply property filter if not already filtered by global property selector
     if (selectedProperty === "all") {
       if (value === "all") {
         setFilteredExpenses(expenses);

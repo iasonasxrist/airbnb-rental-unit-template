@@ -15,6 +15,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { UserButton, useClerk, useUser } from "@clerk/clerk-react";
 import { useEffect, useState } from "react";
 import { PropertySelector } from "../property/PropertySelector";
+import { useProperty } from "@/contexts/PropertyContext";
 
 export function Header() {
   const { toast } = useToast();
@@ -23,6 +24,7 @@ export function Header() {
   const { signOut } = useClerk();
   const { user } = useUser();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const { hasSelectedProperty } = useProperty();
   
   // Rate limiter for notifications
   const [lastNotificationTime, setLastNotificationTime] = useState(0);
@@ -73,14 +75,16 @@ export function Header() {
       </div>
       <h1 className="text-xl font-semibold md:hidden">AirCost</h1>
       <div className="flex items-center space-x-2 md:space-x-4">
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={handleNotificationClick}
-          aria-label="Notifications"
-        >
-          <BellIcon className="h-5 w-5" />
-        </Button>
+        {hasSelectedProperty && (
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={handleNotificationClick}
+            aria-label="Notifications"
+          >
+            <BellIcon className="h-5 w-5" />
+          </Button>
+        )}
         <UserButton 
           afterSignOutUrl="/"
           appearance={{

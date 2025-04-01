@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { PlusCircle, Phone, Mail } from "lucide-react";
+import { PlusCircle, Phone, Mail, Building } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import {
   Dialog,
@@ -81,7 +81,7 @@ const properties = [
 ];
 
 const PendingPayments = () => {
-  const { selectedProperty } = useProperty();
+  const { selectedProperty, hasSelectedProperty } = useProperty();
   const [payments, setPayments] = useState(initialPayments);
   const [filteredPayments, setFilteredPayments] = useState(initialPayments);
   const [open, setOpen] = useState(false);
@@ -97,6 +97,18 @@ const PendingPayments = () => {
     email: "",
   });
   const { toast } = useToast();
+
+  if (!hasSelectedProperty) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[80vh] text-center p-6">
+        <h2 className="text-2xl font-semibold mb-2">Please Select a Property</h2>
+        <p className="text-muted-foreground mb-6">
+          You need to select a property from the dropdown to view pending payments.
+        </p>
+        <Building className="h-16 w-16 text-primary opacity-50 mb-4" />
+      </div>
+    );
+  }
 
   useEffect(() => {
     if (selectedProperty === "all") {

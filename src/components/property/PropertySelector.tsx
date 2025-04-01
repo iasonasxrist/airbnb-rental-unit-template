@@ -80,7 +80,7 @@ export function PropertySelector() {
             <DropdownMenuItem
               key={property.id}
               onClick={() => handlePropertySelect(property.name)}
-              className={selectedProperty === property.name ? "bg-gray-100" : ""}
+              className={`cursor-pointer ${selectedProperty === property.name ? "bg-gray-100" : ""}`}
             >
               {property.name}
             </DropdownMenuItem>
