@@ -68,7 +68,7 @@ export function Header() {
   };
 
   return (
-    <header className="h-16 border-b flex items-center justify-between px-4 md:px-6">
+    <header className="h-16 border-b flex items-center justify-between px-4 md:px-6 relative z-20">
       <div className="flex items-center">
         <h1 className="text-xl font-semibold mr-6 hidden md:block">AirCost</h1>
         <PropertySelector />

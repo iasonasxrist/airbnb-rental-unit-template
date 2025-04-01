@@ -14,10 +14,10 @@ interface AppLayoutProps {
 
 export function AppLayout({ children }: AppLayoutProps) {
   const { toast } = useToast();
-  const { selectedProperty } = useProperty();
+  const { selectedProperty, hasSelectedProperty } = useProperty();
   const isMobile = useIsMobile();
   const location = useLocation();
-  const showContent = selectedProperty !== "all" || location.pathname === "/properties";
+  const showContent = hasSelectedProperty || location.pathname === "/properties";
 
   // This would normally be replaced with a real email notification system
   // that checks for upcoming bookings and sends emails automatically
@@ -39,12 +39,9 @@ export function AppLayout({ children }: AppLayoutProps) {
       };
       
       // Run once when component mounts or selected property changes
-      checkUpcomingBookings();
+      const timeoutId = setTimeout(checkUpcomingBookings, 2000);
       
-      // In a real app, this would be a scheduled job or webhook
-      const intervalId = setInterval(checkUpcomingBookings, 24 * 60 * 60 * 1000); // Check once per day
-      
-      return () => clearInterval(intervalId);
+      return () => clearTimeout(timeoutId);
     }
   }, [toast, selectedProperty]);
 

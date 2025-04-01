@@ -34,6 +34,9 @@ export const PropertyProvider = ({ children }: { children: ReactNode }) => {
     // Store the selected property in localStorage to persist between page refreshes
     if (selectedProperty !== "all") {
       localStorage.setItem("selectedProperty", selectedProperty);
+      toast.success(`Now viewing ${selectedProperty}`);
+    } else {
+      localStorage.removeItem("selectedProperty");
     }
   }, [selectedProperty]);
   
@@ -42,15 +45,13 @@ export const PropertyProvider = ({ children }: { children: ReactNode }) => {
     const savedProperty = localStorage.getItem("selectedProperty");
     if (savedProperty) {
       setSelectedPropertyState(savedProperty);
-      setHasSelectedProperty(true);
       console.log("PropertyContext: Loaded saved property from localStorage:", savedProperty);
     }
   }, []);
 
   const setSelectedProperty = useCallback((property: string) => {
-    // Update state
+    console.log("PropertyContext: setSelectedProperty called with", property);
     setSelectedPropertyState(property);
-    setHasSelectedProperty(property !== "all");
   }, []);
 
   return (

@@ -44,14 +44,6 @@ export function PropertySelector() {
 
   const handlePropertySelect = (propertyName: string) => {
     console.log("PropertySelector: Setting selected property to:", propertyName);
-    
-    // Show toast notification
-    if (propertyName !== "all") {
-      toast.success(`Now viewing ${propertyName}`);
-    } else {
-      toast.info("Please select a property to continue");
-    }
-    
     setSelectedProperty(propertyName);
   };
 
