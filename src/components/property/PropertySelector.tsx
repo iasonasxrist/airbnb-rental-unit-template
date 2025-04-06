@@ -7,7 +7,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { propertyApi } from "@/lib/supabase";
 import { useEffect, useState } from "react";
 import { properties } from "@/hooks/use-bookings";
@@ -21,6 +21,7 @@ type PropertyOption = {
 export function PropertySelector() {
   const { selectedProperty, setSelectedProperty } = useProperty();
   const location = useLocation();
+  const navigate = useNavigate();
   const [propertiesList, setPropertiesList] = useState<PropertyOption[]>([]);
   const isPropertiesPage = location.pathname === "/properties";
   
@@ -41,9 +42,14 @@ export function PropertySelector() {
     fetchProperties();
   }, []);
 
-  const handlePropertySelect = (propertyName: string) => {
+  const handlePropertySelect = (propertyName: string, propertyId: string) => {
     console.log("PropertySelector: Setting selected property to:", propertyName);
     setSelectedProperty(propertyName);
+    
+    // Navigate to the property details page when a property is selected
+    if (location.pathname !== `/property/${propertyId}`) {
+      navigate(`/property/${propertyId}`);
+    }
   };
 
   // If we're on the properties page, return null, but AFTER all hooks are called
@@ -70,7 +76,7 @@ export function PropertySelector() {
           {propertiesList.map((property) => (
             <DropdownMenuItem
               key={property.id}
-              onClick={() => handlePropertySelect(property.name)}
+              onClick={() => handlePropertySelect(property.name, property.id)}
               className={`cursor-pointer ${selectedProperty === property.name ? "bg-gray-100" : ""}`}
             >
               {property.name}

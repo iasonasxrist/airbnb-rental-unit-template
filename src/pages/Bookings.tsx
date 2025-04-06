@@ -1,5 +1,5 @@
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
   Card,
   CardContent,
@@ -20,10 +20,13 @@ import { useProperty } from "@/contexts/PropertyContext";
 import { BookingFilters } from "@/components/booking/BookingFilters";
 import { BookingDialog } from "@/components/booking/BookingDialog";
 import { useBookings, properties, platforms } from "@/hooks/use-bookings";
+import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 
 const Bookings = () => {
-  const { selectedProperty } = useProperty();
+  const { selectedProperty, hasSelectedProperty } = useProperty();
   const { toast } = useToast();
+  const navigate = useNavigate();
   const {
     filteredBookings,
     platformFilter,
@@ -35,6 +38,21 @@ const Bookings = () => {
     console.log("Bookings page: Property changed to", selectedProperty);
     console.log("Bookings page: filteredBookings length:", filteredBookings.length);
   }, [filteredBookings, selectedProperty]);
+
+  // If no property is selected, show a message prompting the user to select one
+  if (!hasSelectedProperty) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[80vh] text-center p-6">
+        <h2 className="text-2xl font-semibold mb-2">Please Select a Property</h2>
+        <p className="text-muted-foreground mb-6">
+          You need to select a property from the dropdown to view bookings.
+        </p>
+        <Button onClick={() => navigate("/properties")}>
+          Go to Properties Page
+        </Button>
+      </div>
+    );
+  }
 
   const handleAddBooking = (newBookingData: any) => {
     if (

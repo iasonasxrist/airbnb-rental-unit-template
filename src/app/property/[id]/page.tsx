@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/components/ui/use-toast";
 import { useProperty } from "@/contexts/PropertyContext";
+import { motion } from "framer-motion";
 
 // Sample data - in a real app, this would come from your database
 const initialProperties = [
@@ -65,7 +66,12 @@ const PropertyDetails = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+      className="space-y-6"
+    >
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold tracking-tight">{property.name}</h1>
         <Button variant="outline" onClick={() => navigate("/properties")}>
@@ -144,7 +150,7 @@ const PropertyDetails = () => {
           </CardFooter>
         </Card>
       </div>
-    </div>
+    </motion.div>
   );
 };
 

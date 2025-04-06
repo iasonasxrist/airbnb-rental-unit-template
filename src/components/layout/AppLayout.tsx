@@ -5,8 +5,9 @@ import { useEffect } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { useProperty } from "@/contexts/PropertyContext";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
+import { Button } from "@/components/ui/button";
 
 interface AppLayoutProps {
   children: React.ReactNode;
@@ -17,7 +18,10 @@ export function AppLayout({ children }: AppLayoutProps) {
   const { selectedProperty, hasSelectedProperty } = useProperty();
   const isMobile = useIsMobile();
   const location = useLocation();
-  const showContent = hasSelectedProperty || location.pathname === "/properties";
+  const navigate = useNavigate();
+  const showContent = hasSelectedProperty || 
+                      location.pathname === "/properties" || 
+                      location.pathname.startsWith("/property/");
 
   // This would normally be replaced with a real email notification system
   // that checks for upcoming bookings and sends emails automatically
@@ -74,8 +78,14 @@ export function AppLayout({ children }: AppLayoutProps) {
                 <div className="text-center max-w-md mx-auto p-8 rounded-lg bg-gray-50 shadow-sm">
                   <h2 className="text-2xl font-semibold mb-4">Welcome to AirCost</h2>
                   <p className="text-gray-600 mb-6">
-                    Please select a property from the dropdown above to view its details and manage your listings.
+                    Please select a property from the dropdown above or go to the properties page to manage your listings.
                   </p>
+                  <Button 
+                    onClick={() => navigate("/properties")}
+                    className="mb-4"
+                  >
+                    Go to Properties
+                  </Button>
                   <div className="py-4">
                     <svg 
                       xmlns="http://www.w3.org/2000/svg" 
