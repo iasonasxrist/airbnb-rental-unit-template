@@ -1,3 +1,4 @@
+
 import { useProperty } from "@/contexts/PropertyContext";
 import { ChevronDown } from "lucide-react";
 import {
@@ -41,6 +42,7 @@ export function PropertySelector() {
   }, []);
 
   const handlePropertySelect = (propertyName: string, propertyId: string) => {
+    console.log("PropertySelector - Selecting property:", propertyName, propertyId);
     setSelectedProperty(propertyName, propertyId);
     
     // If we're already on expenses, bookings, or reports, update the URL to include the new property

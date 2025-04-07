@@ -2,6 +2,7 @@
 import React, { createContext, useContext, useState, ReactNode, useCallback, useEffect } from "react";
 import { toast } from "sonner";
 import { useLocation, useNavigate } from "react-router-dom";
+import { properties } from "@/hooks/use-bookings";
 
 // Define the shape of our context
 type PropertyContextType = {
@@ -48,25 +49,22 @@ export const PropertyProvider = ({ children }: { children: ReactNode }) => {
       pathParts.length >= 3
     ) {
       const urlPropertyId = pathParts[2];
+      console.log("PropertyContext - Found property ID in URL:", urlPropertyId);
       
-      // If property ID in URL differs from stored ID, update localStorage
+      // If property ID in URL differs from stored ID, fetch property details
       if (urlPropertyId !== selectedPropertyId) {
         localStorage.setItem("selectedPropertyId", urlPropertyId);
         
-        // We'll need to fetch the property name from the local data for now
-        const properties = [
-          { id: "1", name: "Beach House" },
-          { id: "2", name: "City Apartment" },
-          { id: "3", name: "Mountain Cabin" },
-        ];
-        
+        // Find the property name from the local data
         const property = properties.find(p => p.id === urlPropertyId);
         if (property) {
+          console.log("PropertyContext - Setting property from URL:", property.name, urlPropertyId);
           setSelectedPropertyState(property.name);
           setSelectedPropertyId(urlPropertyId);
           localStorage.setItem("selectedProperty", property.name);
         } else {
           // Default fallback if property not found
+          console.log("PropertyContext - Property not found, using fallback name");
           setSelectedPropertyState(`Property ${urlPropertyId}`);
           setSelectedPropertyId(urlPropertyId);
           localStorage.setItem("selectedProperty", `Property ${urlPropertyId}`);
@@ -81,6 +79,7 @@ export const PropertyProvider = ({ children }: { children: ReactNode }) => {
     const savedPropertyId = localStorage.getItem("selectedPropertyId");
     
     if (savedProperty && savedPropertyId) {
+      console.log("PropertyContext - Loading from localStorage:", savedProperty, savedPropertyId);
       setSelectedPropertyState(savedProperty);
       setSelectedPropertyId(savedPropertyId);
     }
@@ -89,6 +88,7 @@ export const PropertyProvider = ({ children }: { children: ReactNode }) => {
   // Update localStorage when property selection changes
   useEffect(() => {
     if (hasSelectedProperty) {
+      console.log("PropertyContext - Updating localStorage:", selectedProperty, selectedPropertyId);
       localStorage.setItem("selectedProperty", selectedProperty);
       localStorage.setItem("selectedPropertyId", selectedPropertyId!);
       toast.success(`Now viewing ${selectedProperty}`);
@@ -99,13 +99,13 @@ export const PropertyProvider = ({ children }: { children: ReactNode }) => {
   }, [selectedProperty, selectedPropertyId, hasSelectedProperty]);
 
   const setSelectedProperty = useCallback((property: string, propertyId: string) => {
-    console.log("Setting selected property:", property, propertyId);
+    console.log("PropertyContext - Setting selected property:", property, propertyId);
     setSelectedPropertyState(property);
     setSelectedPropertyId(propertyId);
   }, []);
   
   const clearSelectedProperty = useCallback(() => {
-    console.log("Clearing selected property");
+    console.log("PropertyContext - Clearing selected property");
     setSelectedPropertyState("all");
     setSelectedPropertyId(null);
     localStorage.removeItem("selectedProperty");

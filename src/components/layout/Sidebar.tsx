@@ -32,51 +32,65 @@ export function Sidebar() {
     setShowMobileMenu(false);
   }, [location.pathname]);
 
-  // Updated to create property-specific URLs
+  // Create property-specific URLs
   const getPropertyUrl = (baseUrl: string) => {
     if (!selectedPropertyId) return baseUrl;
     return `${baseUrl}/${selectedPropertyId}`;
   };
 
+  // Determine if a nav item is active
+  const isNavItemActive = (href: string, basePath: string) => {
+    if (href === location.pathname) return true;
+    if (basePath && location.pathname.startsWith(`/${basePath}`)) return true;
+    return false;
+  };
+
   const navigation = [
     { 
       name: "Dashboard", 
-      href: selectedPropertyId ? `/property/${selectedPropertyId}` : "/dashboard",
+      href: hasSelectedProperty ? `/property/${selectedPropertyId}` : "/dashboard",
       icon: Home,
-      requiresProperty: false
+      requiresProperty: false,
+      basePath: hasSelectedProperty ? "property" : "dashboard"
     },
     { 
       name: "Properties", 
       href: "/properties", 
       icon: Building,
-      requiresProperty: false
+      requiresProperty: false,
+      basePath: "properties"
     },
     { 
       name: "Expenses", 
       href: getPropertyUrl("/expenses"),
       icon: DollarSign,
-      requiresProperty: true
+      requiresProperty: true,
+      basePath: "expenses"
     },
     { 
       name: "Bookings", 
       href: getPropertyUrl("/bookings"),
       icon: Calendar,
-      requiresProperty: true
+      requiresProperty: true,
+      basePath: "bookings"
     },
     { 
       name: "Pending Payments", 
       href: getPropertyUrl("/pending-payments"),
       icon: Phone,
-      requiresProperty: true
+      requiresProperty: true,
+      basePath: "pending-payments"
     },
     { 
       name: "Reports", 
       href: getPropertyUrl("/reports"), 
       icon: BarChart,
-      requiresProperty: true
+      requiresProperty: true,
+      basePath: "reports"
     },
   ];
 
+  // Filter navigation items based on whether a property is selected
   const filteredNavigation = navigation.filter(item => 
     !item.requiresProperty || hasSelectedProperty
   );
@@ -131,8 +145,7 @@ export function Sidebar() {
                         to={item.href}
                         className={cn(
                           "flex items-center px-3 py-3 rounded-md text-sm font-medium transition-colors",
-                          (location.pathname === item.href || 
-                           (location.pathname.startsWith('/' + item.href.split('/')[1])))
+                          isNavItemActive(item.href, item.basePath)
                             ? "bg-sidebar-accent text-sidebar-accent-foreground"
                             : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
                         )}
@@ -219,8 +232,7 @@ export function Sidebar() {
                 to={item.href}
                 className={cn(
                   "flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors",
-                  (location.pathname === item.href || 
-                   (location.pathname.startsWith('/' + item.href.split('/')[1])))
+                  isNavItemActive(item.href, item.basePath)
                     ? "bg-sidebar-accent text-sidebar-accent-foreground"
                     : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
                   collapsed ? "justify-center" : ""

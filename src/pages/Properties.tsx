@@ -95,6 +95,7 @@ const Properties = () => {
   };
 
   const handleViewProperty = (propertyId: string, propertyName: string) => {
+    console.log("Properties - View property:", propertyName, propertyId);
     // Make sure we store both name and ID
     setSelectedProperty(propertyName, propertyId);
     // Navigate to property details page
