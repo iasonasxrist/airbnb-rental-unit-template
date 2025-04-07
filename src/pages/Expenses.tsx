@@ -1,52 +1,25 @@
 
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { PlusCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { PlusCircle, Filter } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { useProperty } from "@/contexts/PropertyContext";
+import { ExpenseTable } from "@/components/expense/ExpenseTable";
+import { ExpenseForm } from "@/components/expense/ExpenseForm";
+import { PropertyFilter } from "@/components/expense/PropertyFilter";
 
+// Data types
+type Expense = {
+  id: string;
+  description: string;
+  category: string;
+  amount: number;
+  date: string;
+  property: string;
+};
+
+// Sample data
 const initialExpenses = [
   {
     id: "1",
@@ -260,187 +233,36 @@ const Expenses = () => {
         <h1 className="text-3xl font-bold tracking-tight">Expenses</h1>
         <div className="flex space-x-2">
           {selectedProperty === "all" && (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline">
-                  <Filter className="h-4 w-4 mr-2" />
-                  Filter
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="bg-white z-50">
-                <DropdownMenuLabel>Filter by Property</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuRadioGroup
-                  value={propertyFilter}
-                  onValueChange={handleFilterChange}
-                >
-                  <DropdownMenuRadioItem value="all">
-                    All Properties
-                  </DropdownMenuRadioItem>
-                  {properties.map((property) => (
-                    <DropdownMenuRadioItem
-                      key={property.id}
-                      value={property.name}
-                    >
-                      {property.name}
-                    </DropdownMenuRadioItem>
-                  ))}
-                </DropdownMenuRadioGroup>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <PropertyFilter 
+              propertyFilter={propertyFilter}
+              handleFilterChange={handleFilterChange}
+              properties={properties}
+            />
           )}
 
-          <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger asChild>
-              <Button>
-                <PlusCircle className="h-4 w-4 mr-2" />
-                Add Expense
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="bg-white">
-              <DialogHeader>
-                <DialogTitle>Add New Expense</DialogTitle>
-                <DialogDescription>
-                  Record a new expense for one of your properties.
-                </DialogDescription>
-              </DialogHeader>
-              <div className="grid gap-4 py-4">
-                <div className="grid gap-2">
-                  <Label htmlFor="description">Description</Label>
-                  <Input
-                    id="description"
-                    value={newExpense.description}
-                    onChange={(e) =>
-                      setNewExpense({
-                        ...newExpense,
-                        description: e.target.value,
-                      })
-                    }
-                    placeholder="Plumbing repair"
-                  />
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="category">Category</Label>
-                  <Select
-                    onValueChange={(value) =>
-                      setNewExpense({ ...newExpense, category: value })
-                    }
-                    value={newExpense.category}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select a category" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-white">
-                      {categories.map((category) => (
-                        <SelectItem key={category} value={category}>
-                          {category}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="amount">Amount ($)</Label>
-                  <Input
-                    id="amount"
-                    type="number"
-                    step="0.01"
-                    value={newExpense.amount}
-                    onChange={(e) =>
-                      setNewExpense({ ...newExpense, amount: e.target.value })
-                    }
-                    placeholder="0.00"
-                  />
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="date">Date</Label>
-                  <Input
-                    id="date"
-                    type="date"
-                    value={newExpense.date}
-                    onChange={(e) =>
-                      setNewExpense({ ...newExpense, date: e.target.value })
-                    }
-                  />
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="property">Property</Label>
-                  <Select
-                    onValueChange={(value) =>
-                      setNewExpense({ ...newExpense, property: value })
-                    }
-                    value={newExpense.property}
-                    defaultValue={selectedProperty !== "all" ? selectedProperty : undefined}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select a property" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-white">
-                      {properties.map((property) => (
-                        <SelectItem key={property.id} value={property.name}>
-                          {property.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-              <DialogFooter>
-                <Button onClick={handleAddExpense}>Add Expense</Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
+          <Button onClick={() => setOpen(true)}>
+            <PlusCircle className="h-4 w-4 mr-2" />
+            Add Expense
+          </Button>
         </div>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>
-            {selectedProperty !== "all" 
-              ? propertyFilter === "all" 
-                ? `Expenses for ${selectedProperty}`
-                : `${propertyFilter} Expenses for ${selectedProperty}`
-              : propertyFilter === "all"
-              ? "All Expenses"
-              : `Expenses for ${propertyFilter}`}
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Description</TableHead>
-                <TableHead>Category</TableHead>
-                <TableHead>Property</TableHead>
-                <TableHead>Date</TableHead>
-                <TableHead className="text-right">Amount</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredExpenses.map((expense) => (
-                <TableRow key={expense.id}>
-                  <TableCell className="font-medium">
-                    {expense.description}
-                  </TableCell>
-                  <TableCell>{expense.category}</TableCell>
-                  <TableCell>{expense.property}</TableCell>
-                  <TableCell>{expense.date}</TableCell>
-                  <TableCell className="text-right">
-                    ${expense.amount.toFixed(2)}
-                  </TableCell>
-                </TableRow>
-              ))}
-              {filteredExpenses.length === 0 && (
-                <TableRow>
-                  <TableCell colSpan={5} className="text-center py-6 text-muted-foreground">
-                    No expenses found for this property
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+      <ExpenseTable 
+        filteredExpenses={filteredExpenses}
+        selectedProperty={selectedProperty}
+        propertyFilter={propertyFilter}
+      />
+
+      <ExpenseForm
+        open={open}
+        setOpen={setOpen}
+        newExpense={newExpense}
+        setNewExpense={setNewExpense}
+        handleAddExpense={handleAddExpense}
+        selectedProperty={selectedProperty}
+        properties={properties}
+        categories={categories}
+      />
     </div>
   );
 };
