@@ -28,7 +28,7 @@ export function PropertyFilter({
       <DropdownMenuTrigger asChild>
         <Button variant="outline">
           <Filter className="h-4 w-4 mr-2" />
-          Filter
+          {propertyFilter === "all" ? "All Properties" : propertyFilter}
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="bg-white z-50">

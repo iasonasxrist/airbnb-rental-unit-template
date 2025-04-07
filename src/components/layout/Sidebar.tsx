@@ -131,7 +131,8 @@ export function Sidebar() {
                         to={item.href}
                         className={cn(
                           "flex items-center px-3 py-3 rounded-md text-sm font-medium transition-colors",
-                          location.pathname === item.href.split("?")[0]
+                          (location.pathname === item.href || 
+                           (location.pathname.startsWith('/' + item.href.split('/')[1])))
                             ? "bg-sidebar-accent text-sidebar-accent-foreground"
                             : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
                         )}
@@ -219,7 +220,7 @@ export function Sidebar() {
                 className={cn(
                   "flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors",
                   (location.pathname === item.href || 
-                   (item.requiresProperty && location.pathname.includes(item.href.split('/').slice(1)[0])))
+                   (location.pathname.startsWith('/' + item.href.split('/')[1])))
                     ? "bg-sidebar-accent text-sidebar-accent-foreground"
                     : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
                   collapsed ? "justify-center" : ""
