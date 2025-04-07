@@ -147,7 +147,6 @@ const Expenses = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   
-  // Handle URL property ID
   useEffect(() => {
     if (propertyId) {
       const property = properties.find(p => p.id === propertyId);
@@ -157,9 +156,7 @@ const Expenses = () => {
     }
   }, [propertyId, setSelectedProperty]);
 
-  // Filter expenses based on selected property
   useEffect(() => {
-    console.log("Expenses: Filtering expenses for property:", selectedProperty, "propertyId:", propertyId);
     if (!hasSelectedProperty && !propertyId) {
       navigate("/properties");
       return;
@@ -400,9 +397,9 @@ const Expenses = () => {
         <CardHeader>
           <CardTitle>
             {selectedProperty !== "all" 
-              ? platformFilter === "all" 
+              ? propertyFilter === "all" 
                 ? `Expenses for ${selectedProperty}`
-                : `${platformFilter} Expenses for ${selectedProperty}`
+                : `${propertyFilter} Expenses for ${selectedProperty}`
               : propertyFilter === "all"
               ? "All Expenses"
               : `Expenses for ${propertyFilter}`}
