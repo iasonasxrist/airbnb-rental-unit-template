@@ -1,5 +1,5 @@
-
 import { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import {
   Card,
   CardContent,
@@ -45,6 +45,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useProperty } from "@/contexts/PropertyContext";
+import { useNavigate } from "react-router-dom";
 
 const initialExpenses = [
   {
@@ -130,7 +131,8 @@ const categories = [
 ];
 
 const Expenses = () => {
-  const { selectedProperty, hasSelectedProperty } = useProperty();
+  const { propertyId } = useParams();
+  const { selectedProperty, hasSelectedProperty, setSelectedProperty } = useProperty();
   const [expenses, setExpenses] = useState(initialExpenses);
   const [filteredExpenses, setFilteredExpenses] = useState(initialExpenses);
   const [open, setOpen] = useState(false);
@@ -143,24 +145,43 @@ const Expenses = () => {
     property: "",
   });
   const { toast } = useToast();
-
-  // Update the useEffect to include selectedProperty as a dependency
+  const navigate = useNavigate();
+  
+  // Handle URL property ID
   useEffect(() => {
-    console.log("Expenses: Filtering expenses for property:", selectedProperty);
+    if (propertyId) {
+      const property = properties.find(p => p.id === propertyId);
+      if (property) {
+        setSelectedProperty(property.name, propertyId);
+      }
+    }
+  }, [propertyId, setSelectedProperty]);
+
+  // Filter expenses based on selected property
+  useEffect(() => {
+    console.log("Expenses: Filtering expenses for property:", selectedProperty, "propertyId:", propertyId);
+    if (!hasSelectedProperty && !propertyId) {
+      navigate("/properties");
+      return;
+    }
+    
     if (selectedProperty === "all") {
       setFilteredExpenses(expenses);
     } else {
       setFilteredExpenses(expenses.filter((expense) => expense.property === selectedProperty));
     }
-  }, [selectedProperty, expenses]);
+  }, [selectedProperty, expenses, hasSelectedProperty, propertyId, navigate]);
 
-  if (!hasSelectedProperty) {
+  if (!hasSelectedProperty && !propertyId) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[80vh] text-center p-6">
         <h2 className="text-2xl font-semibold mb-2">Please Select a Property</h2>
-        <p className="text-muted-foreground">
-          You need to select a property from the dropdown to view expenses.
+        <p className="text-muted-foreground mb-4">
+          You need to select a property to view expenses.
         </p>
+        <Button onClick={() => navigate("/properties")}>
+          Go to Properties
+        </Button>
       </div>
     );
   }
@@ -379,9 +400,11 @@ const Expenses = () => {
         <CardHeader>
           <CardTitle>
             {selectedProperty !== "all" 
-              ? `Expenses for ${selectedProperty}`
+              ? platformFilter === "all" 
+                ? `Expenses for ${selectedProperty}`
+                : `${platformFilter} Expenses for ${selectedProperty}`
               : propertyFilter === "all"
-              ? "All Properties"
+              ? "All Expenses"
               : `Expenses for ${propertyFilter}`}
           </CardTitle>
         </CardHeader>

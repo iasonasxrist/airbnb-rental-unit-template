@@ -34,6 +34,39 @@ export const PropertyProvider = ({ children }: { children: ReactNode }) => {
   // Derived state from selectedProperty
   const hasSelectedProperty = selectedProperty !== "all" && selectedPropertyId !== null;
   
+  // Extract property ID from URL if present
+  useEffect(() => {
+    const pathParts = location.pathname.split('/');
+    
+    // Check if path contains a propertyId
+    if (
+      (pathParts[1] === 'property' || 
+       pathParts[1] === 'expenses' ||
+       pathParts[1] === 'bookings' ||
+       pathParts[1] === 'reports' ||
+       pathParts[1] === 'pending-payments') && 
+      pathParts.length >= 3
+    ) {
+      const urlPropertyId = pathParts[2];
+      const savedPropertyName = localStorage.getItem("selectedProperty");
+      
+      // If property ID in URL differs from stored ID, update localStorage
+      if (urlPropertyId !== selectedPropertyId) {
+        localStorage.setItem("selectedPropertyId", urlPropertyId);
+        
+        // If we have a saved property name for this ID, use it
+        if (savedPropertyName) {
+          setSelectedPropertyState(savedPropertyName);
+          setSelectedPropertyId(urlPropertyId);
+        } else {
+          // We'll need to fetch the property name from somewhere, for now just use ID
+          setSelectedPropertyState(`Property ${urlPropertyId}`);
+          setSelectedPropertyId(urlPropertyId);
+        }
+      }
+    }
+  }, [location.pathname, selectedPropertyId]);
+  
   // Load selected property from localStorage on initial render
   useEffect(() => {
     const savedProperty = localStorage.getItem("selectedProperty");
@@ -42,13 +75,8 @@ export const PropertyProvider = ({ children }: { children: ReactNode }) => {
     if (savedProperty && savedPropertyId) {
       setSelectedPropertyState(savedProperty);
       setSelectedPropertyId(savedPropertyId);
-      
-      // Only navigate to property details if on dashboard or root
-      if (location.pathname === '/' || location.pathname === '/dashboard') {
-        navigate(`/property/${savedPropertyId}`);
-      }
     }
-  }, [navigate, location.pathname]);
+  }, []);
 
   // Update localStorage when property selection changes
   useEffect(() => {

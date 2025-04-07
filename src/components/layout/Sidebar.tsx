@@ -32,8 +32,10 @@ export function Sidebar() {
     setShowMobileMenu(false);
   }, [location.pathname]);
 
-  const getPropertySpecificUrl = (baseUrl: string) => {
-    return selectedPropertyId ? `${baseUrl}?propertyId=${selectedPropertyId}` : baseUrl;
+  // Updated to create property-specific URLs
+  const getPropertyUrl = (baseUrl: string) => {
+    if (!selectedPropertyId) return baseUrl;
+    return `${baseUrl}/${selectedPropertyId}`;
   };
 
   const navigation = [
@@ -51,25 +53,25 @@ export function Sidebar() {
     },
     { 
       name: "Expenses", 
-      href: getPropertySpecificUrl("/expenses"),
+      href: getPropertyUrl("/expenses"),
       icon: DollarSign,
       requiresProperty: true
     },
     { 
       name: "Bookings", 
-      href: getPropertySpecificUrl("/bookings"),
+      href: getPropertyUrl("/bookings"),
       icon: Calendar,
       requiresProperty: true
     },
     { 
       name: "Pending Payments", 
-      href: getPropertySpecificUrl("/pending-payments"),
+      href: getPropertyUrl("/pending-payments"),
       icon: Phone,
       requiresProperty: true
     },
     { 
       name: "Reports", 
-      href: getPropertySpecificUrl("/reports"), 
+      href: getPropertyUrl("/reports"), 
       icon: BarChart,
       requiresProperty: true
     },
@@ -216,7 +218,8 @@ export function Sidebar() {
                 to={item.href}
                 className={cn(
                   "flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors",
-                  location.pathname === item.href.split("?")[0]
+                  (location.pathname === item.href || 
+                   (item.requiresProperty && location.pathname.includes(item.href.split('/').slice(1)[0])))
                     ? "bg-sidebar-accent text-sidebar-accent-foreground"
                     : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
                   collapsed ? "justify-center" : ""

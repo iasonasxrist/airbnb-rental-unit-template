@@ -1,4 +1,6 @@
 
+import { useParams, useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 import {
   Card,
   CardContent,
@@ -29,6 +31,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useState } from "react";
+import { useProperty } from "@/contexts/PropertyContext";
+import { Button } from "@/components/ui/button";
 
 // Sample data - in a real app, this would come from your database
 const monthlyData = [
@@ -73,13 +77,67 @@ const propertyData = [
   },
 ];
 
+// Property mapping for ID to name lookup
+const properties = [
+  { id: "1", name: "Beach House" },
+  { id: "2", name: "City Apartment" },
+  { id: "3", name: "Mountain Cabin" },
+];
+
 const Reports = () => {
   const [timeframe, setTimeframe] = useState("6months");
+  const { propertyId } = useParams();
+  const { selectedProperty, hasSelectedProperty, setSelectedProperty } = useProperty();
+  const navigate = useNavigate();
+
+  // Handle URL property ID
+  useEffect(() => {
+    if (propertyId) {
+      const property = properties.find(p => p.id === propertyId);
+      if (property) {
+        setSelectedProperty(property.name, propertyId);
+      }
+    }
+    
+    if (!hasSelectedProperty && !propertyId) {
+      navigate("/properties");
+    }
+  }, [propertyId, setSelectedProperty, hasSelectedProperty, navigate]);
+
+  // If no property is selected, show a message prompting the user to select one
+  if (!hasSelectedProperty && !propertyId) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[80vh] text-center p-6">
+        <h2 className="text-2xl font-semibold mb-2">Please Select a Property</h2>
+        <p className="text-muted-foreground mb-6">
+          You need to select a property to view reports.
+        </p>
+        <Button onClick={() => navigate("/properties")}>
+          Go to Properties Page
+        </Button>
+      </div>
+    );
+  }
+
+  // Filter data for the selected property
+  const filteredMonthlyData = selectedProperty === "all" 
+    ? monthlyData 
+    : monthlyData.map(item => ({...item, revenue: item.revenue * 0.7, expenses: item.expenses * 0.7, profit: item.profit * 0.7}));
+
+  const filteredExpenseData = selectedProperty === "all"
+    ? expenseData
+    : expenseData.map(item => ({...item, value: item.value * 0.7}));
+
+  const filteredPropertyData = selectedProperty === "all"
+    ? propertyData
+    : propertyData.filter(p => p.name === selectedProperty);
 
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold tracking-tight">Reports</h1>
+        <h1 className="text-3xl font-bold tracking-tight">
+          Reports {selectedProperty !== "all" ? `for ${selectedProperty}` : ""}
+        </h1>
         <div className="flex items-center space-x-2">
           <span className="text-sm text-muted-foreground">Timeframe:</span>
           <Select
@@ -104,13 +162,14 @@ const Reports = () => {
             <CardTitle>Revenue vs Expenses</CardTitle>
             <CardDescription>
               Monthly breakdown of revenue and expenses
+              {selectedProperty !== "all" ? ` for ${selectedProperty}` : ""}
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="h-[300px]">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart
-                  data={monthlyData}
+                  data={filteredMonthlyData}
                   margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
                 >
                   <CartesianGrid strokeDasharray="3 3" />
@@ -129,13 +188,16 @@ const Reports = () => {
         <Card>
           <CardHeader>
             <CardTitle>Profit Trend</CardTitle>
-            <CardDescription>Monthly profit analysis</CardDescription>
+            <CardDescription>
+              Monthly profit analysis
+              {selectedProperty !== "all" ? ` for ${selectedProperty}` : ""}
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="h-[300px]">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart
-                  data={monthlyData}
+                  data={filteredMonthlyData}
                   margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
                 >
                   <CartesianGrid strokeDasharray="3 3" />
@@ -163,6 +225,7 @@ const Reports = () => {
             <CardTitle>Expense Breakdown</CardTitle>
             <CardDescription>
               Distribution of expenses by category
+              {selectedProperty !== "all" ? ` for ${selectedProperty}` : ""}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -170,7 +233,7 @@ const Reports = () => {
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
-                    data={expenseData}
+                    data={filteredExpenseData}
                     cx="50%"
                     cy="50%"
                     labelLine={false}
@@ -181,7 +244,7 @@ const Reports = () => {
                       `${name} ${(percent * 100).toFixed(0)}%`
                     }
                   >
-                    {expenseData.map((entry, index) => (
+                    {filteredExpenseData.map((entry, index) => (
                       <Cell
                         key={`cell-${index}`}
                         fill={COLORS[index % COLORS.length]}
@@ -197,54 +260,97 @@ const Reports = () => {
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Property Comparison</CardTitle>
-            <CardDescription>
-              Performance metrics across properties
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="h-[300px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart
-                  data={propertyData}
-                  margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" />
-                  <YAxis yAxisId="left" orientation="left" stroke="#0EA5E9" />
-                  <YAxis
-                    yAxisId="right"
-                    orientation="right"
-                    stroke="#8884d8"
-                  />
-                  <Tooltip />
-                  <Legend />
-                  <Bar
-                    yAxisId="left"
-                    dataKey="revenue"
-                    fill="#0EA5E9"
-                    name="Revenue"
-                  />
-                  <Bar
-                    yAxisId="left"
-                    dataKey="expenses"
-                    fill="#F97316"
-                    name="Expenses"
-                  />
-                  <Line
-                    yAxisId="right"
-                    type="monotone"
-                    dataKey="occupancy"
-                    stroke="#8884d8"
-                    name="Occupancy %"
-                  />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </CardContent>
-        </Card>
+        {selectedProperty === "all" && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Property Comparison</CardTitle>
+              <CardDescription>
+                Performance metrics across properties
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="h-[300px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart
+                    data={propertyData}
+                    margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="name" />
+                    <YAxis yAxisId="left" orientation="left" stroke="#0EA5E9" />
+                    <YAxis
+                      yAxisId="right"
+                      orientation="right"
+                      stroke="#8884d8"
+                    />
+                    <Tooltip />
+                    <Legend />
+                    <Bar
+                      yAxisId="left"
+                      dataKey="revenue"
+                      fill="#0EA5E9"
+                      name="Revenue"
+                    />
+                    <Bar
+                      yAxisId="left"
+                      dataKey="expenses"
+                      fill="#F97316"
+                      name="Expenses"
+                    />
+                    <Line
+                      yAxisId="right"
+                      type="monotone"
+                      dataKey="occupancy"
+                      stroke="#8884d8"
+                      name="Occupancy %"
+                    />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+        
+        {selectedProperty !== "all" && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Occupancy Rate</CardTitle>
+              <CardDescription>
+                Monthly occupancy rate for {selectedProperty}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="h-[300px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart
+                    data={[
+                      { month: "Jan", occupancy: 65 },
+                      { month: "Feb", occupancy: 70 },
+                      { month: "Mar", occupancy: 75 },
+                      { month: "Apr", occupancy: 80 },
+                      { month: "May", occupancy: 85 },
+                      { month: "Jun", occupancy: 90 },
+                    ]}
+                    margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="month" />
+                    <YAxis />
+                    <Tooltip formatter={(value) => [`${value}%`, "Occupancy"]} />
+                    <Legend />
+                    <Line
+                      type="monotone"
+                      dataKey="occupancy"
+                      stroke="#8884d8"
+                      activeDot={{ r: 8 }}
+                      strokeWidth={2}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            </CardContent>
+          </Card>
+        )}
       </div>
     </div>
   );
