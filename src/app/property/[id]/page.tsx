@@ -48,7 +48,7 @@ const PropertyDetails = () => {
       const foundProperty = initialProperties.find(p => p.id === id);
       if (foundProperty) {
         setProperty(foundProperty);
-        // Important - set the selected property name AND id when viewing details
+        // Set the selected property in context
         setSelectedProperty(foundProperty.name, foundProperty.id);
       } else {
         navigate("/properties");
@@ -62,7 +62,11 @@ const PropertyDetails = () => {
   }, [id, setSelectedProperty, navigate, toast]);
 
   if (!property) {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full"></div>
+      </div>
+    );
   }
 
   return (

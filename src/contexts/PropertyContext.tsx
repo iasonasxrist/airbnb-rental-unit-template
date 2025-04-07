@@ -7,7 +7,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 type PropertyContextType = {
   selectedProperty: string;
   selectedPropertyId: string | null;
-  setSelectedProperty: (property: string, propertyId?: string) => void;
+  setSelectedProperty: (property: string, propertyId: string) => void;
   hasSelectedProperty: boolean;
   clearSelectedProperty: () => void;
 };
@@ -28,27 +28,11 @@ export const useProperty = () => useContext(PropertyContext);
 export const PropertyProvider = ({ children }: { children: ReactNode }) => {
   const [selectedProperty, setSelectedPropertyState] = useState<string>("all");
   const [selectedPropertyId, setSelectedPropertyId] = useState<string | null>(null);
-  const [hasSelectedProperty, setHasSelectedProperty] = useState<boolean>(false);
   const location = useLocation();
   const navigate = useNavigate();
   
-  // Set up the selected property effect
-  useEffect(() => {
-    console.log("PropertyContext: selectedProperty changed to", selectedProperty);
-    
-    // Update hasSelectedProperty state
-    setHasSelectedProperty(selectedProperty !== "all");
-    
-    // Store the selected property in localStorage to persist between page refreshes
-    if (selectedProperty !== "all" && selectedPropertyId) {
-      localStorage.setItem("selectedProperty", selectedProperty);
-      localStorage.setItem("selectedPropertyId", selectedPropertyId);
-      toast.success(`Now viewing ${selectedProperty}`);
-    } else if (selectedProperty === "all") {
-      localStorage.removeItem("selectedProperty");
-      localStorage.removeItem("selectedPropertyId");
-    }
-  }, [selectedProperty, selectedPropertyId]);
+  // Derived state from selectedProperty
+  const hasSelectedProperty = selectedProperty !== "all" && selectedPropertyId !== null;
   
   // Load selected property from localStorage on initial render
   useEffect(() => {
@@ -58,31 +42,34 @@ export const PropertyProvider = ({ children }: { children: ReactNode }) => {
     if (savedProperty && savedPropertyId) {
       setSelectedPropertyState(savedProperty);
       setSelectedPropertyId(savedPropertyId);
-      console.log("PropertyContext: Loaded saved property from localStorage:", savedProperty);
       
-      // Navigate to property page if on root
+      // Only navigate to property details if on dashboard or root
       if (location.pathname === '/' || location.pathname === '/dashboard') {
         navigate(`/property/${savedPropertyId}`);
       }
     }
   }, [navigate, location.pathname]);
 
-  const setSelectedProperty = useCallback((property: string, propertyId?: string) => {
-    console.log("PropertyContext: setSelectedProperty called with", property, propertyId);
-    setSelectedPropertyState(property);
-    
-    if (propertyId) {
-      setSelectedPropertyId(propertyId);
-    } else if (property === "all") {
-      setSelectedPropertyId(null);
+  // Update localStorage when property selection changes
+  useEffect(() => {
+    if (hasSelectedProperty) {
+      localStorage.setItem("selectedProperty", selectedProperty);
+      localStorage.setItem("selectedPropertyId", selectedPropertyId!);
+      toast.success(`Now viewing ${selectedProperty}`);
+    } else {
+      localStorage.removeItem("selectedProperty");
+      localStorage.removeItem("selectedPropertyId");
     }
+  }, [selectedProperty, selectedPropertyId, hasSelectedProperty]);
+
+  const setSelectedProperty = useCallback((property: string, propertyId: string) => {
+    setSelectedPropertyState(property);
+    setSelectedPropertyId(propertyId);
   }, []);
   
   const clearSelectedProperty = useCallback(() => {
     setSelectedPropertyState("all");
     setSelectedPropertyId(null);
-    localStorage.removeItem("selectedProperty");
-    localStorage.removeItem("selectedPropertyId");
   }, []);
 
   return (

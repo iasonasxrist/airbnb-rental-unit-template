@@ -19,7 +19,7 @@ type PropertyOption = {
 };
 
 export function PropertySelector() {
-  const { selectedProperty, setSelectedProperty, clearSelectedProperty } = useProperty();
+  const { selectedProperty, setSelectedProperty, clearSelectedProperty, hasSelectedProperty } = useProperty();
   const location = useLocation();
   const navigate = useNavigate();
   const [propertiesList, setPropertiesList] = useState<PropertyOption[]>([]);
@@ -29,7 +29,6 @@ export function PropertySelector() {
     const fetchProperties = async () => {
       try {
         const propertiesData = await propertyApi.getProperties();
-        // Map the full Property objects to just the id and name needed for the dropdown
         const mappedProperties: PropertyOption[] = propertiesData.map(p => ({ id: p.id, name: p.name }));
         setPropertiesList(mappedProperties);
       } catch (error) {
@@ -43,13 +42,10 @@ export function PropertySelector() {
   }, []);
 
   const handlePropertySelect = (propertyName: string, propertyId: string) => {
-    console.log("PropertySelector: Setting selected property to:", propertyName, propertyId);
     setSelectedProperty(propertyName, propertyId);
     
     // Navigate to the property details page when a property is selected
-    if (location.pathname !== `/property/${propertyId}`) {
-      navigate(`/property/${propertyId}`);
-    }
+    navigate(`/property/${propertyId}`);
   };
   
   const handleViewAllProperties = () => {
@@ -57,7 +53,7 @@ export function PropertySelector() {
     navigate("/properties");
   };
 
-  // If we're on the properties page, return null, but AFTER all hooks are called
+  // If we're on the properties page, don't show the dropdown
   if (isPropertiesPage) {
     return null;
   }
@@ -68,12 +64,12 @@ export function PropertySelector() {
         <DropdownMenuTrigger asChild>
           <button 
             className={`flex items-center text-lg font-semibold gap-1 hover:text-primary transition-all ${
-              selectedProperty === "all" 
-                ? "px-4 py-2 bg-primary/10 text-primary rounded-md animate-pulse" 
+              !hasSelectedProperty 
+                ? "px-4 py-2 bg-primary/10 text-primary rounded-md" 
                 : ""
             }`}
           >
-            {selectedProperty === "all" ? "Select a Property" : selectedProperty}
+            {hasSelectedProperty ? selectedProperty : "Select a Property"}
             <ChevronDown className="h-4 w-4" />
           </button>
         </DropdownMenuTrigger>

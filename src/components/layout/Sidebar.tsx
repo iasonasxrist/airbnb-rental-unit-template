@@ -1,6 +1,6 @@
 
 import { Home, DollarSign, Building, Phone, Calendar, BarChart } from "lucide-react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
@@ -17,11 +17,9 @@ export function Sidebar() {
   const location = useLocation();
   const [collapsed, setCollapsed] = useState(false);
   const isMobile = useIsMobile();
-  const navigate = useNavigate();
   const [showMobileMenu, setShowMobileMenu] = useState(false);
-  const { selectedProperty, selectedPropertyId, hasSelectedProperty } = useProperty();
-  const showNavigation = hasSelectedProperty || location.pathname === "/properties";
-
+  const { selectedPropertyId, hasSelectedProperty } = useProperty();
+  
   // Auto-collapse sidebar on mobile
   useEffect(() => {
     if (isMobile) {
@@ -34,38 +32,52 @@ export function Sidebar() {
     setShowMobileMenu(false);
   }, [location.pathname]);
 
+  const getPropertySpecificUrl = (baseUrl: string) => {
+    return selectedPropertyId ? `${baseUrl}?propertyId=${selectedPropertyId}` : baseUrl;
+  };
+
   const navigation = [
     { 
       name: "Dashboard", 
-      href: selectedPropertyId ? `/dashboard?propertyId=${selectedPropertyId}` : "/dashboard",
-      icon: Home 
+      href: selectedPropertyId ? `/property/${selectedPropertyId}` : "/dashboard",
+      icon: Home,
+      requiresProperty: false
     },
     { 
       name: "Properties", 
       href: "/properties", 
-      icon: Building 
+      icon: Building,
+      requiresProperty: false
     },
     { 
       name: "Expenses", 
-      href: selectedPropertyId ? `/expenses?propertyId=${selectedPropertyId}` : "/expenses",
-      icon: DollarSign 
+      href: getPropertySpecificUrl("/expenses"),
+      icon: DollarSign,
+      requiresProperty: true
     },
     { 
       name: "Bookings", 
-      href: selectedPropertyId ? `/bookings?propertyId=${selectedPropertyId}` : "/bookings",
-      icon: Calendar 
+      href: getPropertySpecificUrl("/bookings"),
+      icon: Calendar,
+      requiresProperty: true
     },
     { 
       name: "Pending Payments", 
-      href: selectedPropertyId ? `/pending-payments?propertyId=${selectedPropertyId}` : "/pending-payments",
-      icon: Phone 
+      href: getPropertySpecificUrl("/pending-payments"),
+      icon: Phone,
+      requiresProperty: true
     },
     { 
       name: "Reports", 
-      href: selectedPropertyId ? `/reports?propertyId=${selectedPropertyId}` : "/reports", 
-      icon: BarChart 
+      href: getPropertySpecificUrl("/reports"), 
+      icon: BarChart,
+      requiresProperty: true
     },
   ];
+
+  const filteredNavigation = navigation.filter(item => 
+    !item.requiresProperty || hasSelectedProperty
+  );
 
   // On extremely small screens, use a drawer menu
   if (isMobile && window.innerWidth < 640) {
@@ -100,63 +112,35 @@ export function Sidebar() {
           <SheetContent side="left" className="w-64 p-0">
             <div className="h-full flex flex-col bg-sidebar">
               <div className="p-4 flex items-center border-b border-sidebar-border h-16">
-                <span 
-                  className="text-xl font-bold text-airbnb-primary cursor-pointer" 
-                  onClick={() => {
-                    navigate("/");
-                    setShowMobileMenu(false);
-                  }}
-                >
+                <span className="text-xl font-bold text-airbnb-primary cursor-pointer">
                   AirCost
                 </span>
               </div>
               <nav className="flex-1 p-2 space-y-1 overflow-y-auto">
-                <AnimatePresence>
-                  {showNavigation ? (
+                <div className="space-y-1">
+                  {filteredNavigation.map((item, index) => (
                     <motion.div
-                      key="nav-mobile"
-                      initial={{ opacity: 0, y: 20 }}
+                      key={item.name}
+                      initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: 20 }}
-                      transition={{ duration: 0.3, staggerChildren: 0.1 }}
-                      className="space-y-1"
+                      transition={{ delay: index * 0.05 }}
                     >
-                      {navigation.map((item, index) => (
-                        <motion.div
-                          key={item.name}
-                          initial={{ opacity: 0, y: 10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: index * 0.05 }}
-                        >
-                          <Link
-                            to={item.href}
-                            className={cn(
-                              "flex items-center px-3 py-3 rounded-md text-sm font-medium transition-colors",
-                              location.pathname === item.href.split("?")[0]
-                                ? "bg-sidebar-accent text-sidebar-accent-foreground"
-                                : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-                            )}
-                            onClick={() => setShowMobileMenu(false)}
-                          >
-                            <item.icon className="h-5 w-5 mr-3" />
-                            <span>{item.name}</span>
-                          </Link>
-                        </motion.div>
-                      ))}
+                      <Link
+                        to={item.href}
+                        className={cn(
+                          "flex items-center px-3 py-3 rounded-md text-sm font-medium transition-colors",
+                          location.pathname === item.href.split("?")[0]
+                            ? "bg-sidebar-accent text-sidebar-accent-foreground"
+                            : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                        )}
+                        onClick={() => setShowMobileMenu(false)}
+                      >
+                        <item.icon className="h-5 w-5 mr-3" />
+                        <span>{item.name}</span>
+                      </Link>
                     </motion.div>
-                  ) : (
-                    <motion.div
-                      key="select-property-mobile"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      className="px-3 py-8 text-center text-sidebar-foreground/70"
-                    >
-                      <p className="mb-2">Please select a property</p>
-                      <p className="text-xs">Navigation will appear here after selection</p>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+                  ))}
+                </div>
               </nav>
             </div>
           </SheetContent>
@@ -175,10 +159,7 @@ export function Sidebar() {
     >
       <div className="p-4 flex items-center border-b border-sidebar-border h-16">
         {!collapsed && (
-          <span 
-            className="text-xl font-bold text-airbnb-primary cursor-pointer" 
-            onClick={() => navigate("/")}
-          >
+          <span className="text-xl font-bold text-airbnb-primary cursor-pointer">
             AirCost
           </span>
         )}
@@ -223,77 +204,32 @@ export function Sidebar() {
         </Button>
       </div>
       <nav className="flex-1 p-2 space-y-1 overflow-y-auto">
-        <AnimatePresence mode="wait">
-          {showNavigation ? (
+        <div className="space-y-1">
+          {filteredNavigation.map((item, index) => (
             <motion.div
-              key="nav-desktop"
-              initial={{ opacity: 0, y: 20 }}
+              key={item.name}
+              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 20 }}
-              transition={{ duration: 0.3, staggerChildren: 0.1 }}
-              className="space-y-1"
+              transition={{ delay: index * 0.05 }}
             >
-              {navigation.map((item, index) => (
-                <motion.div
-                  key={item.name}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.05 }}
-                >
-                  <Link
-                    to={item.href}
-                    className={cn(
-                      "flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors",
-                      location.pathname === item.href.split("?")[0]
-                        ? "bg-sidebar-accent text-sidebar-accent-foreground"
-                        : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
-                      collapsed ? "justify-center" : ""
-                    )}
-                    aria-label={item.name}
-                    title={collapsed ? item.name : ""}
-                  >
-                    <item.icon className={cn("h-5 w-5", collapsed ? "" : "mr-2")} />
-                    {!collapsed && <span>{item.name}</span>}
-                  </Link>
-                </motion.div>
-              ))}
+              <Link
+                to={item.href}
+                className={cn(
+                  "flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors",
+                  location.pathname === item.href.split("?")[0]
+                    ? "bg-sidebar-accent text-sidebar-accent-foreground"
+                    : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+                  collapsed ? "justify-center" : ""
+                )}
+                aria-label={item.name}
+                title={collapsed ? item.name : ""}
+              >
+                <item.icon className={cn("h-5 w-5", collapsed ? "" : "mr-2")} />
+                {!collapsed && <span>{item.name}</span>}
+              </Link>
             </motion.div>
-          ) : (
-            <motion.div
-              key="select-property-desktop"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className={cn(
-                "text-center text-sidebar-foreground/70 py-6",
-                collapsed ? "px-1" : "px-3"
-              )}
-            >
-              {!collapsed ? (
-                <>
-                  <p className="mb-2">Please select a property</p>
-                  <p className="text-xs">Navigation will appear after selection</p>
-                </>
-              ) : (
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="mx-auto text-sidebar-foreground/50"
-                >
-                  <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
-                  <circle cx="12" cy="7" r="4"></circle>
-                </svg>
-              )}
-            </motion.div>
-          )}
-        </AnimatePresence>
+          ))}
+        </div>
       </nav>
     </div>
   );
