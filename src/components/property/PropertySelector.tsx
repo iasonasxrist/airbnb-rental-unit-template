@@ -11,6 +11,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { propertyApi } from "@/lib/supabase";
 import { useEffect, useState } from "react";
 import { properties } from "@/hooks/use-bookings";
+import { toast } from "sonner";
 
 // Define a simpler type for the dropdown that only needs id and name
 type PropertyOption = {
@@ -44,6 +45,7 @@ export function PropertySelector() {
   const handlePropertySelect = (propertyName: string, propertyId: string) => {
     console.log("PropertySelector - Selecting property:", propertyName, propertyId);
     setSelectedProperty(propertyName, propertyId);
+    toast.success(`Switched to ${propertyName}`);
     
     // If we're already on expenses, bookings, or reports, update the URL to include the new property
     if (location.pathname.startsWith('/expenses') || 

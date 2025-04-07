@@ -11,7 +11,7 @@ import {
   SheetTrigger 
 } from "@/components/ui/sheet";
 import { useProperty } from "@/contexts/PropertyContext";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 
 export function Sidebar() {
   const location = useLocation();
@@ -34,7 +34,7 @@ export function Sidebar() {
 
   // Create property-specific URLs
   const getPropertyUrl = (baseUrl: string) => {
-    if (!selectedPropertyId) return baseUrl;
+    if (!hasSelectedProperty || !selectedPropertyId) return baseUrl;
     return `${baseUrl}/${selectedPropertyId}`;
   };
 
@@ -48,7 +48,7 @@ export function Sidebar() {
   const navigation = [
     { 
       name: "Dashboard", 
-      href: hasSelectedProperty ? `/property/${selectedPropertyId}` : "/dashboard",
+      href: hasSelectedProperty && selectedPropertyId ? `/property/${selectedPropertyId}` : "/dashboard",
       icon: Home,
       requiresProperty: false,
       basePath: hasSelectedProperty ? "property" : "dashboard"

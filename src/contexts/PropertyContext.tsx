@@ -15,7 +15,7 @@ type PropertyContextType = {
 
 // Create the context with a default value
 const PropertyContext = createContext<PropertyContextType>({
-  selectedProperty: "all",
+  selectedProperty: "",
   selectedPropertyId: null,
   setSelectedProperty: () => {},
   hasSelectedProperty: false,
@@ -27,13 +27,13 @@ export const useProperty = () => useContext(PropertyContext);
 
 // Provider component
 export const PropertyProvider = ({ children }: { children: ReactNode }) => {
-  const [selectedProperty, setSelectedPropertyState] = useState<string>("all");
+  const [selectedProperty, setSelectedPropertyState] = useState<string>("");
   const [selectedPropertyId, setSelectedPropertyId] = useState<string | null>(null);
   const location = useLocation();
   const navigate = useNavigate();
   
   // Derived state from selectedProperty
-  const hasSelectedProperty = selectedProperty !== "all" && selectedPropertyId !== null;
+  const hasSelectedProperty = selectedProperty !== "" && selectedPropertyId !== null;
   
   // Extract property ID from URL if present
   useEffect(() => {
@@ -85,28 +85,19 @@ export const PropertyProvider = ({ children }: { children: ReactNode }) => {
     }
   }, []);
 
-  // Update localStorage when property selection changes
-  useEffect(() => {
-    if (hasSelectedProperty) {
-      console.log("PropertyContext - Updating localStorage:", selectedProperty, selectedPropertyId);
-      localStorage.setItem("selectedProperty", selectedProperty);
-      localStorage.setItem("selectedPropertyId", selectedPropertyId!);
-      toast.success(`Now viewing ${selectedProperty}`);
-    } else {
-      localStorage.removeItem("selectedProperty");
-      localStorage.removeItem("selectedPropertyId");
-    }
-  }, [selectedProperty, selectedPropertyId, hasSelectedProperty]);
-
   const setSelectedProperty = useCallback((property: string, propertyId: string) => {
     console.log("PropertyContext - Setting selected property:", property, propertyId);
     setSelectedPropertyState(property);
     setSelectedPropertyId(propertyId);
+    
+    // Store selection in localStorage
+    localStorage.setItem("selectedProperty", property);
+    localStorage.setItem("selectedPropertyId", propertyId);
   }, []);
   
   const clearSelectedProperty = useCallback(() => {
     console.log("PropertyContext - Clearing selected property");
-    setSelectedPropertyState("all");
+    setSelectedPropertyState("");
     setSelectedPropertyId(null);
     localStorage.removeItem("selectedProperty");
     localStorage.removeItem("selectedPropertyId");

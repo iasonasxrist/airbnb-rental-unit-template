@@ -6,6 +6,7 @@ export interface Booking {
   id: string;
   guest: string;
   property: string;
+  propertyId: string;
   checkIn: string;
   checkOut: string;
   status: string;
@@ -28,6 +29,7 @@ const initialBookings = [
     id: "1",
     guest: "John Smith",
     property: "Beach House",
+    propertyId: "1",
     checkIn: "2023-05-15",
     checkOut: "2023-05-20",
     status: "upcoming",
@@ -38,6 +40,7 @@ const initialBookings = [
     id: "2",
     guest: "Jane Doe",
     property: "City Apartment",
+    propertyId: "2",
     checkIn: "2023-05-22",
     checkOut: "2023-05-25",
     status: "upcoming",
@@ -48,6 +51,7 @@ const initialBookings = [
     id: "3",
     guest: "Bob Johnson",
     property: "Mountain Cabin",
+    propertyId: "3",
     checkIn: "2023-06-01",
     checkOut: "2023-06-07",
     status: "upcoming",
@@ -58,6 +62,7 @@ const initialBookings = [
     id: "4",
     guest: "Alice Brown",
     property: "Beach House",
+    propertyId: "1",
     checkIn: "2023-04-10",
     checkOut: "2023-04-15",
     status: "completed",
@@ -68,6 +73,7 @@ const initialBookings = [
     id: "5",
     guest: "Charlie Wilson",
     property: "City Apartment",
+    propertyId: "2",
     checkIn: "2023-04-20",
     checkOut: "2023-04-22",
     status: "completed",
@@ -89,19 +95,19 @@ export function useBookings() {
   const [bookings, setBookings] = useState<Booking[]>(initialBookings);
   const [filteredBookings, setFilteredBookings] = useState<Booking[]>(initialBookings);
   const [platformFilter, setPlatformFilter] = useState<string>("all");
-  const { selectedProperty } = useProperty();
+  const { selectedProperty, selectedPropertyId } = useProperty();
 
   // Filter bookings based on selected property and platform
   useEffect(() => {
-    console.log("useBookings: Filtering with property:", selectedProperty, "and platform:", platformFilter);
+    console.log("useBookings: Filtering with property:", selectedProperty, "propertyId:", selectedPropertyId, "and platform:", platformFilter);
     
     // Start with all bookings
     let filtered = [...bookings];
     
     // Apply property filter
-    if (selectedProperty && selectedProperty !== "all") {
-      console.log("useBookings: Filtering by property:", selectedProperty);
-      filtered = filtered.filter((booking) => booking.property === selectedProperty);
+    if (selectedPropertyId) {
+      console.log("useBookings: Filtering by propertyId:", selectedPropertyId);
+      filtered = filtered.filter((booking) => booking.propertyId === selectedPropertyId);
       console.log("useBookings: After property filter:", filtered.length, "bookings");
     }
     
@@ -115,14 +121,19 @@ export function useBookings() {
     // Update filtered bookings
     console.log("useBookings: Final filtered bookings:", filtered.length);
     setFilteredBookings(filtered);
-  }, [selectedProperty, platformFilter, bookings]);
+  }, [selectedProperty, selectedPropertyId, platformFilter, bookings]);
 
   // Handle adding a new booking
   const addBooking = (newBookingData: BookingFormData) => {
+    // Find property ID from name
+    const propertyData = properties.find(p => p.name === newBookingData.property);
+    const propertyId = propertyData ? propertyData.id : "1"; // Default to first property if not found
+
     const booking: Booking = {
       id: (bookings.length + 1).toString(),
       guest: newBookingData.guest,
       property: newBookingData.property,
+      propertyId: propertyId,
       checkIn: newBookingData.checkIn,
       checkOut: newBookingData.checkOut,
       status: "upcoming",
