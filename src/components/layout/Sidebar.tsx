@@ -19,8 +19,8 @@ export function Sidebar() {
   const isMobile = useIsMobile();
   const navigate = useNavigate();
   const [showMobileMenu, setShowMobileMenu] = useState(false);
-  const { selectedProperty } = useProperty();
-  const showNavigation = selectedProperty !== "all";
+  const { selectedProperty, selectedPropertyId, hasSelectedProperty } = useProperty();
+  const showNavigation = hasSelectedProperty || location.pathname === "/properties";
 
   // Auto-collapse sidebar on mobile
   useEffect(() => {
@@ -35,12 +35,36 @@ export function Sidebar() {
   }, [location.pathname]);
 
   const navigation = [
-    { name: "Dashboard", href: "/dashboard", icon: Home },
-    { name: "Properties", href: "/properties", icon: Building },
-    { name: "Expenses", href: "/expenses", icon: DollarSign },
-    { name: "Bookings", href: "/bookings", icon: Calendar },
-    { name: "Pending Payments", href: "/pending-payments", icon: Phone },
-    { name: "Reports", href: "/reports", icon: BarChart },
+    { 
+      name: "Dashboard", 
+      href: selectedPropertyId ? `/dashboard?propertyId=${selectedPropertyId}` : "/dashboard",
+      icon: Home 
+    },
+    { 
+      name: "Properties", 
+      href: "/properties", 
+      icon: Building 
+    },
+    { 
+      name: "Expenses", 
+      href: selectedPropertyId ? `/expenses?propertyId=${selectedPropertyId}` : "/expenses",
+      icon: DollarSign 
+    },
+    { 
+      name: "Bookings", 
+      href: selectedPropertyId ? `/bookings?propertyId=${selectedPropertyId}` : "/bookings",
+      icon: Calendar 
+    },
+    { 
+      name: "Pending Payments", 
+      href: selectedPropertyId ? `/pending-payments?propertyId=${selectedPropertyId}` : "/pending-payments",
+      icon: Phone 
+    },
+    { 
+      name: "Reports", 
+      href: selectedPropertyId ? `/reports?propertyId=${selectedPropertyId}` : "/reports", 
+      icon: BarChart 
+    },
   ];
 
   // On extremely small screens, use a drawer menu
@@ -108,7 +132,7 @@ export function Sidebar() {
                             to={item.href}
                             className={cn(
                               "flex items-center px-3 py-3 rounded-md text-sm font-medium transition-colors",
-                              location.pathname === item.href
+                              location.pathname === item.href.split("?")[0]
                                 ? "bg-sidebar-accent text-sidebar-accent-foreground"
                                 : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
                             )}
@@ -220,7 +244,7 @@ export function Sidebar() {
                     to={item.href}
                     className={cn(
                       "flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors",
-                      location.pathname === item.href
+                      location.pathname === item.href.split("?")[0]
                         ? "bg-sidebar-accent text-sidebar-accent-foreground"
                         : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
                       collapsed ? "justify-center" : ""

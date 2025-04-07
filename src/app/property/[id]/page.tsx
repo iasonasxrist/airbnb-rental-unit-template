@@ -48,8 +48,8 @@ const PropertyDetails = () => {
       const foundProperty = initialProperties.find(p => p.id === id);
       if (foundProperty) {
         setProperty(foundProperty);
-        // Important - set the selected property when viewing details
-        setSelectedProperty(foundProperty.name);
+        // Important - set the selected property name AND id when viewing details
+        setSelectedProperty(foundProperty.name, foundProperty.id);
       } else {
         navigate("/properties");
         toast({
@@ -113,8 +113,8 @@ const PropertyDetails = () => {
             </div>
           </CardContent>
           <CardFooter className="flex justify-between">
-            <Button onClick={() => navigate("/bookings")}>View Bookings</Button>
-            <Button onClick={() => navigate("/expenses")}>View Expenses</Button>
+            <Button onClick={() => navigate(`/bookings?propertyId=${property.id}`)}>View Bookings</Button>
+            <Button onClick={() => navigate(`/expenses?propertyId=${property.id}`)}>View Expenses</Button>
           </CardFooter>
         </Card>
 
@@ -144,7 +144,7 @@ const PropertyDetails = () => {
             </div>
           </CardContent>
           <CardFooter>
-            <Button variant="outline" className="w-full" onClick={() => navigate("/reports")}>
+            <Button variant="outline" className="w-full" onClick={() => navigate(`/reports?propertyId=${property.id}`)}>
               View Detailed Reports
             </Button>
           </CardFooter>

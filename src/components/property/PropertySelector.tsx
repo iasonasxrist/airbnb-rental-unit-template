@@ -19,7 +19,7 @@ type PropertyOption = {
 };
 
 export function PropertySelector() {
-  const { selectedProperty, setSelectedProperty } = useProperty();
+  const { selectedProperty, setSelectedProperty, clearSelectedProperty } = useProperty();
   const location = useLocation();
   const navigate = useNavigate();
   const [propertiesList, setPropertiesList] = useState<PropertyOption[]>([]);
@@ -43,13 +43,18 @@ export function PropertySelector() {
   }, []);
 
   const handlePropertySelect = (propertyName: string, propertyId: string) => {
-    console.log("PropertySelector: Setting selected property to:", propertyName);
-    setSelectedProperty(propertyName);
+    console.log("PropertySelector: Setting selected property to:", propertyName, propertyId);
+    setSelectedProperty(propertyName, propertyId);
     
     // Navigate to the property details page when a property is selected
     if (location.pathname !== `/property/${propertyId}`) {
       navigate(`/property/${propertyId}`);
     }
+  };
+  
+  const handleViewAllProperties = () => {
+    clearSelectedProperty();
+    navigate("/properties");
   };
 
   // If we're on the properties page, return null, but AFTER all hooks are called
@@ -82,6 +87,12 @@ export function PropertySelector() {
               {property.name}
             </DropdownMenuItem>
           ))}
+          <DropdownMenuItem
+            className="cursor-pointer font-medium border-t mt-1 pt-1"
+            onClick={handleViewAllProperties}
+          >
+            View All Properties
+          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     </div>

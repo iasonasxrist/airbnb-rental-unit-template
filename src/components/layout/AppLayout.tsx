@@ -15,13 +15,21 @@ interface AppLayoutProps {
 
 export function AppLayout({ children }: AppLayoutProps) {
   const { toast } = useToast();
-  const { selectedProperty, hasSelectedProperty } = useProperty();
+  const { selectedProperty, selectedPropertyId, hasSelectedProperty } = useProperty();
   const isMobile = useIsMobile();
   const location = useLocation();
   const navigate = useNavigate();
-  const showContent = hasSelectedProperty || 
-                      location.pathname === "/properties" || 
-                      location.pathname.startsWith("/property/");
+  const isPropertyRelatedPage = location.pathname === "/properties" || 
+                               location.pathname.startsWith("/property/") ||
+                               (selectedPropertyId && (
+                                 location.pathname === "/dashboard" ||
+                                 location.pathname === "/expenses" ||
+                                 location.pathname === "/bookings" ||
+                                 location.pathname === "/pending-payments" ||
+                                 location.pathname === "/reports"
+                               ));
+                               
+  const showContent = hasSelectedProperty || isPropertyRelatedPage;
 
   // This would normally be replaced with a real email notification system
   // that checks for upcoming bookings and sends emails automatically
