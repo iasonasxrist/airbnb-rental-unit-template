@@ -1,4 +1,3 @@
-
 import { useProperty } from "@/contexts/PropertyContext";
 import { ChevronDown } from "lucide-react";
 import {
@@ -44,8 +43,17 @@ export function PropertySelector() {
   const handlePropertySelect = (propertyName: string, propertyId: string) => {
     setSelectedProperty(propertyName, propertyId);
     
-    // Navigate to the property details page when a property is selected
-    navigate(`/property/${propertyId}`);
+    // If we're already on expenses, bookings, or reports, update the URL to include the new property
+    if (location.pathname.startsWith('/expenses') || 
+        location.pathname.startsWith('/bookings') || 
+        location.pathname.startsWith('/reports') ||
+        location.pathname.startsWith('/pending-payments')) {
+      const basePath = location.pathname.split('/')[1];
+      navigate(`/${basePath}/${propertyId}`);
+    } else {
+      // Otherwise navigate to the property details page
+      navigate(`/property/${propertyId}`);
+    }
   };
   
   const handleViewAllProperties = () => {

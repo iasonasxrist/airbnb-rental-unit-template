@@ -45,14 +45,12 @@ const Bookings = () => {
     }
   }, [propertyId, setSelectedProperty]);
 
+  // Redirect if no property selected
   useEffect(() => {
-    console.log("Bookings page: Property changed to", selectedProperty);
-    console.log("Bookings page: filteredBookings length:", filteredBookings.length);
-    
     if (!hasSelectedProperty && !propertyId) {
       navigate("/properties");
     }
-  }, [filteredBookings, selectedProperty, hasSelectedProperty, propertyId, navigate]);
+  }, [hasSelectedProperty, propertyId, navigate]);
 
   // If no property is selected, show a message prompting the user to select one
   if (!hasSelectedProperty && !propertyId) {

@@ -69,6 +69,7 @@ export const PropertyProvider = ({ children }: { children: ReactNode }) => {
           // Default fallback if property not found
           setSelectedPropertyState(`Property ${urlPropertyId}`);
           setSelectedPropertyId(urlPropertyId);
+          localStorage.setItem("selectedProperty", `Property ${urlPropertyId}`);
         }
       }
     }
@@ -107,6 +108,8 @@ export const PropertyProvider = ({ children }: { children: ReactNode }) => {
     console.log("Clearing selected property");
     setSelectedPropertyState("all");
     setSelectedPropertyId(null);
+    localStorage.removeItem("selectedProperty");
+    localStorage.removeItem("selectedPropertyId");
   }, []);
 
   return (

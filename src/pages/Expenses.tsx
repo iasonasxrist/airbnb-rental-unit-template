@@ -120,27 +120,34 @@ const Expenses = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   
+  // Handle propertyId from URL
   useEffect(() => {
     if (propertyId) {
       const property = properties.find(p => p.id === propertyId);
       if (property) {
         setSelectedProperty(property.name, propertyId);
+        setPropertyFilter(property.name);
       }
     }
   }, [propertyId, setSelectedProperty]);
 
+  // Update filtered expenses when selection changes
+  useEffect(() => {
+    if (selectedProperty !== "all") {
+      setFilteredExpenses(expenses.filter((expense) => expense.property === selectedProperty));
+    } else if (propertyFilter !== "all") {
+      setFilteredExpenses(expenses.filter((expense) => expense.property === propertyFilter));
+    } else {
+      setFilteredExpenses(expenses);
+    }
+  }, [selectedProperty, expenses, propertyFilter]);
+
+  // Redirect if no property selected
   useEffect(() => {
     if (!hasSelectedProperty && !propertyId) {
       navigate("/properties");
-      return;
     }
-    
-    if (selectedProperty === "all") {
-      setFilteredExpenses(expenses);
-    } else {
-      setFilteredExpenses(expenses.filter((expense) => expense.property === selectedProperty));
-    }
-  }, [selectedProperty, expenses, hasSelectedProperty, propertyId, navigate]);
+  }, [hasSelectedProperty, propertyId, navigate]);
 
   if (!hasSelectedProperty && !propertyId) {
     return (
@@ -184,18 +191,17 @@ const Expenses = () => {
     const updatedExpenses = [...expenses, expense];
     setExpenses(updatedExpenses);
     
-    if (selectedProperty === "all") {
-      if (propertyFilter === "all") {
-        setFilteredExpenses(updatedExpenses);
-      } else {
-        setFilteredExpenses(
-          updatedExpenses.filter((exp) => exp.property === propertyFilter)
-        );
+    // Update filtered expenses based on current filters
+    if (selectedProperty !== "all") {
+      if (expense.property === selectedProperty) {
+        setFilteredExpenses([...filteredExpenses, expense]);
+      }
+    } else if (propertyFilter !== "all") {
+      if (expense.property === propertyFilter) {
+        setFilteredExpenses([...filteredExpenses, expense]);
       }
     } else {
-      setFilteredExpenses(
-        updatedExpenses.filter((exp) => exp.property === selectedProperty)
-      );
+      setFilteredExpenses(updatedExpenses);
     }
 
     setNewExpense({
@@ -218,12 +224,14 @@ const Expenses = () => {
   const handleFilterChange = (value: string) => {
     setPropertyFilter(value);
     
-    if (selectedProperty === "all") {
-      if (value === "all") {
-        setFilteredExpenses(expenses);
+    if (value === "all") {
+      if (selectedProperty !== "all") {
+        setFilteredExpenses(expenses.filter(expense => expense.property === selectedProperty));
       } else {
-        setFilteredExpenses(expenses.filter((expense) => expense.property === value));
+        setFilteredExpenses(expenses);
       }
+    } else {
+      setFilteredExpenses(expenses.filter((expense) => expense.property === value));
     }
   };
 

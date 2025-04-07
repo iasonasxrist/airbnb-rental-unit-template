@@ -95,8 +95,9 @@ const Properties = () => {
   };
 
   const handleViewProperty = (propertyId: string, propertyName: string) => {
-    // Make sure we're passing both parameters correctly
+    // Make sure we store both name and ID
     setSelectedProperty(propertyName, propertyId);
+    // Navigate to property details page
     navigate(`/property/${propertyId}`);
   };
 
