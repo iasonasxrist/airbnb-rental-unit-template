@@ -53,25 +53,6 @@ export function PropertySelector() {
     navigate("/properties");
   };
 
-  // Get current base path for the page (e.g. "expenses", "bookings", etc.)
-  const getCurrentBasePath = () => {
-    const path = location.pathname.split('/')[1];
-    // If we're on a property details page, return to properties list
-    if (path === 'property') {
-      return 'properties';
-    }
-    return path;
-  };
-  
-  // Get the current property ID from the URL if available
-  const getCurrentPropertyIdFromUrl = () => {
-    const pathParts = location.pathname.split('/');
-    if (pathParts.length >= 3) {
-      return pathParts[2];
-    }
-    return null;
-  };
-
   // If we're on the properties page, don't show the dropdown
   if (isPropertiesPage) {
     return null;

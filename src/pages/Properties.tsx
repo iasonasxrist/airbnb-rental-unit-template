@@ -95,7 +95,7 @@ const Properties = () => {
   };
 
   const handleViewProperty = (propertyId: string, propertyName: string) => {
-    // Fix: Pass both propertyName and propertyId to setSelectedProperty
+    // Make sure we're passing both parameters correctly
     setSelectedProperty(propertyName, propertyId);
     navigate(`/property/${propertyId}`);
   };
@@ -111,7 +111,7 @@ const Properties = () => {
               Add Property
             </Button>
           </DialogTrigger>
-          <DialogContent>
+          <DialogContent className="bg-white">
             <DialogHeader>
               <DialogTitle>Add New Property</DialogTitle>
               <DialogDescription>

@@ -48,18 +48,25 @@ export const PropertyProvider = ({ children }: { children: ReactNode }) => {
       pathParts.length >= 3
     ) {
       const urlPropertyId = pathParts[2];
-      const savedPropertyName = localStorage.getItem("selectedProperty");
       
       // If property ID in URL differs from stored ID, update localStorage
       if (urlPropertyId !== selectedPropertyId) {
         localStorage.setItem("selectedPropertyId", urlPropertyId);
         
-        // If we have a saved property name for this ID, use it
-        if (savedPropertyName) {
-          setSelectedPropertyState(savedPropertyName);
+        // We'll need to fetch the property name from the local data for now
+        const properties = [
+          { id: "1", name: "Beach House" },
+          { id: "2", name: "City Apartment" },
+          { id: "3", name: "Mountain Cabin" },
+        ];
+        
+        const property = properties.find(p => p.id === urlPropertyId);
+        if (property) {
+          setSelectedPropertyState(property.name);
           setSelectedPropertyId(urlPropertyId);
+          localStorage.setItem("selectedProperty", property.name);
         } else {
-          // We'll need to fetch the property name from somewhere, for now just use ID
+          // Default fallback if property not found
           setSelectedPropertyState(`Property ${urlPropertyId}`);
           setSelectedPropertyId(urlPropertyId);
         }
@@ -91,11 +98,13 @@ export const PropertyProvider = ({ children }: { children: ReactNode }) => {
   }, [selectedProperty, selectedPropertyId, hasSelectedProperty]);
 
   const setSelectedProperty = useCallback((property: string, propertyId: string) => {
+    console.log("Setting selected property:", property, propertyId);
     setSelectedPropertyState(property);
     setSelectedPropertyId(propertyId);
   }, []);
   
   const clearSelectedProperty = useCallback(() => {
+    console.log("Clearing selected property");
     setSelectedPropertyState("all");
     setSelectedPropertyId(null);
   }, []);
