@@ -95,7 +95,8 @@ const Properties = () => {
   };
 
   const handleViewProperty = (propertyId: string, propertyName: string) => {
-    setSelectedProperty(propertyName);
+    // Fix: Pass both propertyName and propertyId to setSelectedProperty
+    setSelectedProperty(propertyName, propertyId);
     navigate(`/property/${propertyId}`);
   };
 
