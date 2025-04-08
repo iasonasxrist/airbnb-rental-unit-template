@@ -8,19 +8,51 @@ import {
   Tooltip,
   Legend,
 } from "recharts";
+import { useState, useEffect } from "react";
 
 // Sample data - in a real app, this would come from your database
-const data = [
-  { name: "Cleaning", value: 350 },
-  { name: "Maintenance", value: 500 },
-  { name: "Supplies", value: 200 },
-  { name: "Utilities", value: 450 },
-  { name: "Taxes", value: 600 },
-];
+const allExpenseData = {
+  "1": [
+    { name: "Cleaning", value: 350 },
+    { name: "Maintenance", value: 500 },
+    { name: "Supplies", value: 150 },
+    { name: "Utilities", value: 450 },
+    { name: "Taxes", value: 600 },
+  ],
+  "2": [
+    { name: "Cleaning", value: 300 },
+    { name: "Maintenance", value: 250 },
+    { name: "Supplies", value: 200 },
+    { name: "Utilities", value: 300 },
+    { name: "Taxes", value: 400 },
+  ],
+  "3": [
+    { name: "Cleaning", value: 250 },
+    { name: "Maintenance", value: 300 },
+    { name: "Supplies", value: 100 },
+    { name: "Utilities", value: 250 },
+    { name: "Taxes", value: 350 },
+  ],
+};
 
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884D8"];
 
-export function ExpenseChart() {
+interface ExpenseChartProps {
+  propertyId?: string | null;
+}
+
+export function ExpenseChart({ propertyId }: ExpenseChartProps) {
+  const [data, setData] = useState(allExpenseData["1"]);
+
+  useEffect(() => {
+    if (propertyId && allExpenseData[propertyId as keyof typeof allExpenseData]) {
+      setData(allExpenseData[propertyId as keyof typeof allExpenseData]);
+    } else {
+      // Default data if no property is selected
+      setData(allExpenseData["1"]);
+    }
+  }, [propertyId]);
+
   return (
     <Card>
       <CardHeader>

@@ -10,6 +10,7 @@ interface StatsCardProps {
   change?: string;
   positive?: boolean;
   className?: string;
+  subtitle?: string;
 }
 
 export function StatsCard({
@@ -19,6 +20,7 @@ export function StatsCard({
   change,
   positive,
   className,
+  subtitle,
 }: StatsCardProps) {
   return (
     <Card className={cn("", className)}>
@@ -28,10 +30,11 @@ export function StatsCard({
       </CardHeader>
       <CardContent>
         <div className="text-2xl font-bold">{value}</div>
+        {subtitle && <p className="text-xs text-muted-foreground mt-1">{subtitle}</p>}
         {change && (
           <p
             className={cn(
-              "text-xs",
+              "text-xs mt-2",
               positive ? "text-green-500" : "text-airbnb-primary"
             )}
           >

@@ -7,7 +7,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { propertyApi } from "@/lib/supabase";
 import { useEffect, useState } from "react";
 import { properties } from "@/hooks/use-bookings";
@@ -23,6 +23,7 @@ export function PropertySelector() {
   const { selectedProperty, setSelectedProperty, clearSelectedProperty, hasSelectedProperty } = useProperty();
   const location = useLocation();
   const navigate = useNavigate();
+  const params = useParams();
   const [propertiesList, setPropertiesList] = useState<PropertyOption[]>([]);
   const isPropertiesPage = location.pathname === "/properties";
   
@@ -52,10 +53,9 @@ export function PropertySelector() {
         location.pathname.startsWith('/bookings') || 
         location.pathname.startsWith('/reports') ||
         location.pathname.startsWith('/pending-payments')) {
-      const basePath = location.pathname.split('/')[1];
-      navigate(`/${basePath}/${propertyId}`);
+      navigate(`/${location.pathname.split('/')[1]}/${propertyId}`);
     } else {
-      // Otherwise navigate to the property details page
+      // Navigate to property details page
       navigate(`/property/${propertyId}`);
     }
   };

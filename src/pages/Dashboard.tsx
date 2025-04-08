@@ -5,17 +5,15 @@ import { motion } from "framer-motion";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { PropertyDashboard } from "@/components/dashboard/PropertyDashboard";
 
 const Dashboard = () => {
   const { hasSelectedProperty, selectedProperty, selectedPropertyId } = useProperty();
   const navigate = useNavigate();
 
-  // Redirect to property details if a property is selected
-  useEffect(() => {
-    if (hasSelectedProperty && selectedPropertyId) {
-      navigate(`/property/${selectedPropertyId}`);
-    }
-  }, [hasSelectedProperty, selectedPropertyId, navigate]);
+  if (hasSelectedProperty && selectedPropertyId) {
+    return <PropertyDashboard />;
+  }
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[80vh] text-center p-6">
