@@ -1,4 +1,4 @@
-"use client"; // Required for hooks like useUser
+"use client";
 
 import { Button } from "@/components/ui/button";
 import Link from "next/link"; // Import Link from next/link
@@ -194,7 +194,7 @@ export default function HomePage(){
           <h2 className="text-3xl font-bold mb-4">
             Ready to simplify your property management?
           </h2>
-          <p className="text-lg mb-8 max-w-2xl mx-auto opacity-90">
+          <p className="text-xxl mb-8 max-w-2xl mx-auto opacity-90">
             Join thousands of property owners who have streamlined their Airbnb
             business with AirCost.
           </p>
@@ -247,7 +247,7 @@ export default function HomePage(){
           <div className="flex flex-col md:flex-row justify-between items-center text-center md:text-left">
             <div className="mb-4 md:mb-0">
               <Link href="/">
-                <span className="text-xl font-bold text-airbnb-primary">
+                <span className="text-xl font-bold text-red-900">
                   AirCost
                 </span>
               </Link>
