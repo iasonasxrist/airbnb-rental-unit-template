@@ -1,4 +1,4 @@
-
+"use client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   PieChart,
@@ -9,7 +9,6 @@ import {
   Legend,
 } from "recharts";
 
-// Sample data - in a real app, this would come from your database
 const data = [
   { name: "Cleaning", value: 350 },
   { name: "Maintenance", value: 500 },
@@ -49,9 +48,7 @@ export function ExpenseChart() {
                   />
                 ))}
               </Pie>
-              <Tooltip
-                formatter={(value) => [`$${value}`, "Amount"]}
-              />
+              <Tooltip formatter={(value) => [`$${value}`, "Amount"]} />
               <Legend />
             </PieChart>
           </ResponsiveContainer>
