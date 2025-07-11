@@ -1,4 +1,4 @@
-# 🏡 Airbnb Management System
+# 🏡 Airbnb Rental Unit with Management System
 
 [![Next.js](https://img.shields.io/badge/Next.js-15.0.0-black?logo=next.js)](https://nextjs.org/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4.0-06B6D4?logo=tailwind-css)](https://tailwindcss.com/)
